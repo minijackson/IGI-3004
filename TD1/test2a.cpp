@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include <cstddef>
+#include <cerrno>
 #include <iostream>
 
 #include "gestionFichiersw.hpp"
