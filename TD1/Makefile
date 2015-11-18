@@ -1,6 +1,6 @@
 CXXFLAGS= -Wall -Wextra -march=native -pipe -std=c++14
 
-all: test2a.bin test2b.bin test2c.bin test2d.bin test2e.bin
+all: test2a.bin test2b.bin test2c.bin test2d.bin test2e.bin test3a.bin test3b.bin test3c.bin
 
 clean:
 	$(RM) *.bin *.o
@@ -12,3 +12,4 @@ test%.bin: test%.cpp gestionFichiersw.o
 	$(CXX) $(CXXFLAGS) $< gestionFichiersw.o -o $@
 
 .PHONY: all clean
+.SECONDARY: gestionFichiersw.o

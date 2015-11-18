@@ -10,19 +10,19 @@
 const size_t TAILLEBUF = 255;
 
 int main() {
-	int fd = open(0, O_RDONLY);
-	if(fd != -1) {
-		char line[TAILLEBUF];
+	char line[TAILLEBUF];
 
-		int status;
-		do {
-			status = firstline(fd, line, TAILLEBUF);
+	try {
+		IFile file(0, TAILLEBUF);
+
+		while(!file.hasEnded()) {
+			file >> line;
 			std::cout << line;
-		} while(status);
+		}
 
-		close(fd);
-	} else {
-		std::cerr << "Error opening file." << std::endl;
-		return EBADF;
+		// file.~Ifile();
+	} catch(std::ios_base::failure e) {
+		std::cerr << "Error: " << e.what() << std::endl;
+		return errno;
 	}
 }

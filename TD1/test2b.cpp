@@ -13,15 +13,17 @@ int main(int argc, char const* argv[]) {
 	if(argc != 2) {
 		std::cout << "Usage: " << argv[0] << " file" << std::endl;
 	} else {
-		int fd = open(argv[1], O_RDONLY);
-		if(fd != -1) {
+		try {
+			IFile file(argv[1], TAILLEBUF);
+
 			char line[TAILLEBUF];
-			firstline(fd, line, TAILLEBUF);
+			file >> line;
 			std::cout << line;
-			close(fd);
-		} else {
-			std::cerr << "Error opening file." << std::endl;
-			return EBADF;
+
+			// file.~Ifile();
+		} catch(std::ios_base::failure e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+			return errno;
 		}
 	}
 }

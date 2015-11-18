@@ -11,13 +11,8 @@ const size_t TAILLEBUF = 255;
 
 int main() {
 	try {
-		IFile file("fichierTest.txt", TAILLEBUF);
-
-		char line[TAILLEBUF];
-		file >> line;
-		std::cout << line;
-
-		// file.~Ifile();
+		OFile file(1, TAILLEBUF);
+		file << "Hello, World!\n";
 	} catch(std::ios_base::failure e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return errno;

@@ -13,22 +13,23 @@ int main(int argc, char const* argv[]) {
 	if(argc != 2) {
 		std::cout << "Usage: " << argv[0] << " file" << std::endl;
 	} else {
-		int fd = open(argv[1], O_RDONLY);
-		size_t lineNumber(0);
-		if(fd != -1) {
+		try {
+			IFile file(argv[1], TAILLEBUF);
+
 			char line[TAILLEBUF];
+			int lineNumber(0);
 
-			int status;
-			do {
-				status = firstline(fd, line, TAILLEBUF);
+			while(!file.hasEnded()) {
+				file >> line;
 				++lineNumber;
-			} while(status);
+			}
 
-			close(fd);
 			std::cout << "Number of lines: " << lineNumber - 1 << std::endl;
-		} else {
-			std::cerr << "Error opening file." << std::endl;
-			return EBADF;
+
+			// file.~Ifile();
+		} catch(std::ios_base::failure e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+			return errno;
 		}
 	}
 }

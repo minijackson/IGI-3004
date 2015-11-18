@@ -10,24 +10,24 @@
 const size_t TAILLEBUF = 255;
 
 int main(int argc, char const* argv[]) {
-	if(argc != 2) {
-		std::cout << "Usage: " << argv[0] << " file" << std::endl;
+	if(argc != 3) {
+		std::cout << "Usage: " << argv[0] << " source destination" << std::endl;
 	} else {
-
 		try {
-			IFile file(argv[1], TAILLEBUF);
-
+			IFile readingFile(argv[1], TAILLEBUF);
+			OFile writingFile(argv[2], TAILLEBUF);
 			char line[TAILLEBUF];
-			while(!file.hasEnded()) {
-				file >> line;
-				std::cout << line;
+
+			while(!readingFile.hasEnded()) {
+				readingFile >> line;
+				writingFile << line;
 			}
 
-			// file.~Ifile();
+			// readingFile.~Ifile();
+			// writingFile.~Ofile();
 		} catch(std::ios_base::failure e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 			return errno;
 		}
-
 	}
 }
