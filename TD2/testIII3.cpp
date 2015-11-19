@@ -6,7 +6,7 @@
 #include "procutils.hpp"
 #include "gestionFichiersw.hpp"
 
-const size_t TAILLEBUF = 255;
+constexpr const size_t TAILLEBUF = 255;
 
 int main(int argc, char* argv[]) {
 

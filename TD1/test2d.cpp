@@ -7,7 +7,7 @@
 
 #include "gestionFichiersw.hpp"
 
-const size_t TAILLEBUF = 2048;
+constexpr const size_t TAILLEBUF = 2048;
 
 int main(int argc, char const* argv[]) {
 	if(argc != 2) {

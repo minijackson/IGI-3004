@@ -7,7 +7,7 @@
 
 #include "gestionFichiersw.hpp"
 
-const size_t TAILLEBUF = 255;
+constexpr const size_t TAILLEBUF = 255;
 
 int main() {
 	char line[TAILLEBUF];
@@ -20,7 +20,7 @@ int main() {
 			std::cout << line;
 		}
 
-		// file.~Ifile();
+		// file.~IFile();
 	} catch(std::ios_base::failure e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return errno;
