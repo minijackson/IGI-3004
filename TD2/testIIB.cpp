@@ -1,5 +1,4 @@
 #include <iostream>
-#include <iomanip>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -13,7 +12,9 @@ int main() {
 		std::cerr << "fork() a échoué." << std::endl;
 		exit(ECHILD);
 	} else if(pid == 0) {
-		std::cout << "Enfant:" << std::endl;
+		char commandName[] = "./testIB1.bin";
+		char* const command[] = {commandName, nullptr};
+		execve(commandName, command, environ);
 	} else {
 		int status(0);
 		wait(&status);
@@ -23,14 +24,7 @@ int main() {
 			exit(1);
 		}
 
-		std::cout << "Parent:" << std::endl;
+		std::cout << getThisProcessID() << " Je suis le père" << std::endl;
 	}
-
-	std::cout << "	- PID du processus: " << std::setw(5) << getThisProcessID()
-	          << std::endl
-	          << "	- PID du processus parent: " << std::setw(5)
-	          << getParentProcessID() << std::endl
-	          << "	- bonjour" << std::endl;
-
 	return 0;
 }

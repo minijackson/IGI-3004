@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 
 #include <unistd.h>
 
@@ -16,8 +17,11 @@ int main() {
 		std::cout << "Parent:" << std::endl;
 	}
 
-	std::cout << "	- " << getThisProcessID() << ", " << getParentProcessID()
-	          << " bonjour" << std::endl;
+	std::cout << "	- PID du processus: " << std::setw(5) << getThisProcessID()
+	          << std::endl
+	          << "	- PID du processus parent: " << std::setw(5)
+	          << getParentProcessID() << std::endl
+	          << "	- bonjour" << std::endl;
 
 	return 0;
 }
