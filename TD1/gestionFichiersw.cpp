@@ -14,7 +14,9 @@ IFile::IFile(char const* filename, size_t const bufSize)
   , bufSize(bufSize) {}
 
 IFile::~IFile() {
-	close(fd);
+	if(openedTheFile) {
+		close(fd);
+	}
 }
 
 IFile& IFile::operator>>(char* line) {
@@ -32,6 +34,7 @@ int IFile::openFile(char const* filename) {
 		throw std::ios_base::failure("Cannot open file for reading",
 		                             std::error_code(errno, std::system_category()));
 	}
+	openedTheFile = true;
 	return fd;
 }
 
@@ -65,7 +68,9 @@ OFile::OFile(char const* filename, size_t const bufSize)
   , bufSize(bufSize) {}
 
 OFile::~OFile() {
-	close(fd);
+	if(openedTheFile) {
+		close(fd);
+	}
 }
 
 OFile& OFile::operator<<(char const* line) {

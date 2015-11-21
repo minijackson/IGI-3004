@@ -3,7 +3,7 @@
 /*! \brief Represents a pipe
  *
  * See the pipe(2) man page for more informations.
- * This Object implements the RAII idiom.
+ * This class implements the RAII idiom.
  */
 class Pipe {
 public:
