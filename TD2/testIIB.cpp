@@ -9,8 +9,8 @@ int main() {
 	pid_t pid = fork();
 
 	if(pid == -1) {
-		std::cerr << "fork() a échoué." << std::endl;
-		exit(ECHILD);
+		std::perror("fork() a échoué");
+		exit(errno);
 	} else if(pid == 0) {
 		char commandName[] = "./testIB1.bin";
 		char* const command[] = {commandName, nullptr};

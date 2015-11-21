@@ -7,11 +7,12 @@
 
 #include "gestionFichiersw.hpp"
 
-constexpr const size_t TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 255;
 
 int main(int argc, char const* argv[]) {
 	if(argc != 2) {
 		std::cout << "Usage: " << argv[0] << " file" << std::endl;
+		exit(EINVAL);
 	} else {
 		try {
 			IFile file(argv[1], TAILLEBUF);
@@ -21,7 +22,7 @@ int main(int argc, char const* argv[]) {
 			std::cout << line;
 
 			// file.~Ifile();
-		} catch(std::ios_base::failure e) {
+		} catch(std::ios_base::failure const& e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 			return errno;
 		}

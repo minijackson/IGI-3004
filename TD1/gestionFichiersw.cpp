@@ -29,7 +29,8 @@ bool IFile::hasEnded() {
 int IFile::openFile(char const* filename) {
 	int fd = open(filename, O_RDONLY);
 	if(fd == -1) {
-		throw std::ios_base::failure(std::strerror(errno));
+		throw std::ios_base::failure("Cannot open file for reading",
+		                             std::error_code(errno, std::system_category()));
 	}
 	return fd;
 }
@@ -50,7 +51,8 @@ void IFile::getLine(char* buf) {
 			}
 		}
 	} else {
-		throw std::ios_base::failure(std::strerror(errno));
+		throw std::ios_base::failure("Cannot read file",
+		                             std::error_code(errno, std::system_category()));
 	}
 }
 
@@ -74,7 +76,8 @@ OFile& OFile::operator<<(char const* line) {
 int OFile::openFile(char const* filename) {
 	int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	if(fd == -1) {
-		throw std::ios_base::failure(std::strerror(errno));
+		throw std::ios_base::failure("Cannot open file for writing",
+		                             std::error_code(errno, std::system_category()));
 	}
 	return fd;
 }
@@ -86,6 +89,7 @@ void OFile::writeLine(char const* content) {
 	}
 
 	if(write(fd, content, len) == -1) {
-		throw std::ios_base::failure(std::strerror(errno));
+		throw std::ios_base::failure("Cannot write in file",
+		                             std::error_code(errno, std::system_category()));
 	}
 }

@@ -6,7 +6,7 @@
 #include "procutils.hpp"
 #include "gestionFichiersw.hpp"
 
-constexpr const size_t TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 255;
 
 int main() {
 	try {
@@ -15,8 +15,8 @@ int main() {
 		pid_t pid = fork();
 
 		if(pid == -1) {
-			std::cerr << "fork() a échoué." << std::endl;
-			exit(ECHILD);
+			std::perror("fork() a échoué");
+			exit(errno);
 		} else {
 			char line[TAILLEBUF];
 
@@ -25,7 +25,7 @@ int main() {
 
 			// file.~IFile();
 		}
-	} catch(std::ios_base::failure e) {
+	} catch(std::ios_base::failure const& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return errno;
 	}
