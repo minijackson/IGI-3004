@@ -29,11 +29,13 @@ Pipe& Pipe::operator<<(char const message[]) {
 
 Pipe& Pipe::operator>>(char message[]) {
 	char buffer(0);
-	int i = -1;
-	while((buffer != '\n') && (buffer != 0x04) && (read(pipeFd[0], &buffer, 1) > 0)) {
-		++i;
-		message[i] = buffer;
+	int i = 0;
+	while((buffer != '\n') && (buffer != 0x04)) {
+		if(read(pipeFd[0], &buffer, 1) > 0) {
+			message[i] = buffer;
+			++i;
+		}
 	}
-	message[i + 1] = '\0';
+	message[i] = '\0';
 	return *this;
 }

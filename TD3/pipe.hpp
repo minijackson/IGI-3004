@@ -27,7 +27,10 @@ public:
 	 */
 	Pipe& operator<<(char const message[]);
 
-	/*! \brief Read on line of the pipe.
+	/*! \brief Read one line of the pipe.
+	 *
+	 * This method will wait for a end-of-line or end-of-transmission caracter.
+	 * If none is present, it will loop infinitely.
 	 *
 	 * \param output the string to write the message to.
 	 *
