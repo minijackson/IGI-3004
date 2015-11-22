@@ -10,8 +10,10 @@ public:
 	/*! \brief Pipe default constructor.
 	 *
 	 * Will create and open a normal pipe.
+	 *
+	 * \param nonBlocking `true` if the pipe must be non-blocking.
 	 */
-	Pipe();
+	explicit Pipe(bool nonBlocking = false);
 
 	/*! \brief Pipe destructor.
 	 *
@@ -42,4 +44,8 @@ protected:
 	/*! \brief The file descriptors of the opened pipe.
 	 */
 	int pipeFd[2];
+
+	/*! \brief `true` if the pipe is opened in non-blocking mode.
+	 */
+	bool nonBlocking;
 };

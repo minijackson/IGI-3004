@@ -1,16 +1,24 @@
 #include "pipe.hpp"
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <system_error>
 #include <ios>
 #include <cerrno>
 #include <cstring>
 
-Pipe::Pipe()
-  : pipeFd{} {
-	if(pipe(pipeFd) == -1) {
-		throw std::system_error(errno, std::system_category());
+Pipe::Pipe(bool nonBlocking)
+  : pipeFd{}
+  , nonBlocking(nonBlocking) {
+	if(nonBlocking) {
+		if(pipe2(pipeFd, O_NONBLOCK) == -1) {
+			throw std::system_error(errno, std::system_category());
+		}
+	} else {
+		if(pipe(pipeFd) == -1) {
+			throw std::system_error(errno, std::system_category());
+		}
 	}
 }
 
@@ -31,9 +39,17 @@ Pipe& Pipe::operator>>(char message[]) {
 	char buffer(0);
 	int i = 0;
 	while((buffer != '\n') && (buffer != 0x04)) {
-		if(read(pipeFd[0], &buffer, 1) > 0) {
+		int status = read(pipeFd[0], &buffer, 1);
+		if(status > 0) {
 			message[i] = buffer;
 			++i;
+		} else if(status < 0) {
+			// If nothing is in the pipe and the pipe is non-blocking
+			if(nonBlocking && errno == EAGAIN) {
+				break;
+			} else {
+				throw std::system_error(errno, std::system_category());
+			}
 		}
 	}
 	message[i] = '\0';
