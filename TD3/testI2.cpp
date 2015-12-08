@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
 			std::perror("fork() a échoué");
 			exit(errno);
 		} else if(pid == 0) {
+			myPipe.readOnly();
 			try {
 				OFile destinationFile(argv[2], TAILLEBUF);
 
@@ -43,6 +44,7 @@ int main(int argc, char* argv[]) {
 				return e.code().value();
 			}
 		} else {
+			myPipe.writeOnly();
 
 			// Character 0x04 is EOT (end of transmission)
 			char const endMessage[] = {0x04, '\0'};

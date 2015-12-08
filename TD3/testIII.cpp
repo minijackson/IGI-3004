@@ -11,6 +11,14 @@
 constexpr size_t const TAILLEBUF = 255;
 
 int main() {
+	signal(SIGUSR1, [](int sig) {
+		if(sig == SIGUSR1) {
+			std::cout << "\nToo late: safe closed" << std::endl;
+			wait();
+			exit(EPERM);
+		}
+	});
+
 	try {
 		pid_t pid = fork();
 
@@ -26,19 +34,6 @@ int main() {
 				char code[TAILLEBUF];
 				std::cout << "You have 10 seconds to open the safe." << std::endl
 				          << "Please enter the code of the safe: " << std::flush;
-
-				//bool notTooLate = true;
-
-				// Cannot pass a lambda with a capture to signal (cannot be converted to a function
-				// pointer)
-				signal(SIGUSR1, [/*&notTooLate*/](int sig) {
-					if(sig == SIGUSR1) {
-						std::cout << "\nToo late: safe closed" << std::endl;
-						// notTooLate = false;
-						wait();
-						exit(EPERM);
-					}
-				});
 
 				IFile consoleIn(0, TAILLEBUF);
 				consoleIn >> code;

@@ -23,8 +23,13 @@ Pipe::Pipe(bool nonBlocking)
 }
 
 Pipe::~Pipe() {
-	close(pipeFd[0]);
-	close(pipeFd[1]);
+	if(!readClosed) {
+		close(pipeFd[0]);
+	}
+
+	if(!writeClosed) {
+		close(pipeFd[1]);
+	}
 }
 
 Pipe& Pipe::operator<<(char const message[]) {
@@ -54,4 +59,14 @@ Pipe& Pipe::operator>>(char message[]) {
 	}
 	message[i] = '\0';
 	return *this;
+}
+
+void Pipe::readOnly() {
+	close(pipeFd[1]);
+	writeClosed = true;
+}
+
+void Pipe::writeOnly() {
+	close(pipeFd[0]);
+	readClosed = true;
 }

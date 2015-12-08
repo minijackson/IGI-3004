@@ -40,6 +40,18 @@ public:
 	 */
 	Pipe& operator>>(char output[]);
 
+	/*! \brief Make the pipe read only.
+	 *
+	 * Will close the write end of the pipe.
+	 */
+	void readOnly();
+
+	/*! \brief Make the pipe write only.
+	 *
+	 * Will close the read end of the pipe.
+	 */
+	void writeOnly();
+
 protected:
 	/*! \brief The file descriptors of the opened pipe.
 	 */
@@ -48,4 +60,12 @@ protected:
 	/*! \brief `true` if the pipe is opened in non-blocking mode.
 	 */
 	bool nonBlocking;
+
+	/*! \brief `true` if the read end of the pipe is closed
+	 */
+	bool readClosed = false;
+
+	/*! \brief `true` if the write end of the pipe is closed
+	 */
+	bool writeClosed = false;
 };
