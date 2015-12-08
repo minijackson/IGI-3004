@@ -12,47 +12,50 @@ constexpr size_t const TAILLEBUF = 255;
 
 int main() {
 	try {
-		Pipe myPipe(/* nonBlocking = */ true);
 		pid_t pid = fork();
 
 		if(pid == -1) {
 			std::perror("fork() a échoué");
 			exit(errno);
 		} else if(pid == 0) {
-			char status[TAILLEBUF];
-
 			sleep(10);
-
-			myPipe >> status;
-
-			if(std::strcmp(status, "Finished\n")) {
-				std::cout << "Too late: safe closed." << std::endl;
-				myPipe << "Too late\n";
-				return EPERM;
-			}
-
+			kill(getppid(), SIGUSR1);
+			return EPERM;
 		} else {
 			try {
 				char code[TAILLEBUF];
 				std::cout << "You have 10 seconds to open the safe." << std::endl
 				          << "Please enter the code of the safe: " << std::flush;
 
+				//bool notTooLate = true;
+
+				// Cannot pass a lambda with a capture to signal (cannot be converted to a function
+				// pointer)
+				signal(SIGUSR1, [/*&notTooLate*/](int sig) {
+					if(sig == SIGUSR1) {
+						std::cout << "\nToo late: safe closed" << std::endl;
+						// notTooLate = false;
+						wait();
+						exit(EPERM);
+					}
+				});
+
 				IFile consoleIn(0, TAILLEBUF);
 				consoleIn >> code;
 
-				char status[TAILLEBUF];
-				myPipe >> status;
-				myPipe << "Finished\n";
+				bool invalidCode = std::strcmp(code, "1234\n");
 
-				bool invalidCode = std::strcmp(code, "1234\n"),
-				     notTooLate = std::strcmp(status, "Too late\n");
-				if(notTooLate) {
-					if(invalidCode) {
-						std::cout << "Code incorrect: safe closed" << std::endl;
-					} else {
-						std::cout << "Code correct: safe opened." << std::endl;
-					}
+				if(invalidCode) {
+					std::cout << "Code incorrect: safe closed" << std::endl;
+				} else {
+					std::cout << "Code correct: safe opened." << std::endl;
 				}
+
+				signal(SIGUSR1, SIG_IGN);
+				// Stop the child
+				kill(pid, SIGTERM);
+
+				return invalidCode ? EPERM : 0;
 
 			} catch(std::ios_base::failure const& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
