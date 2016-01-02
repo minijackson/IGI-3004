@@ -5,22 +5,20 @@
 #include <cerrno>
 #include <iostream>
 
-#include "gestionFichiersw.hpp"
+#include "gestion-fichiers.hpp"
 
 constexpr size_t const TAILLEBUF = 255;
 
 int main() {
-	char line[TAILLEBUF];
-
 	try {
-		IFile file(0, TAILLEBUF);
+		IFile readingFile(1, TAILLEBUF);
+		OFile writingFile(0, TAILLEBUF);
+		char line[TAILLEBUF];
 
-		while(!file.hasEnded()) {
-			file >> line;
-			std::cout << line;
+		while(!readingFile.hasEnded()) {
+			readingFile >> line;
+			writingFile << line;
 		}
-
-		// file.~IFile();
 	} catch(std::ios_base::failure const& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 		return errno;

@@ -4,7 +4,7 @@
 #include <sys/wait.h>
 
 #include "procutils.hpp"
-#include "gestionFichiersw.hpp"
+#include "gestion-fichiers.hpp"
 
 constexpr size_t const TAILLEBUF = 255;
 

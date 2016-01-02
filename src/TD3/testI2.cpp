@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "pipe.hpp"
-#include "gestionFichiersw.hpp"
+#include "gestion-fichiers.hpp"
 
 constexpr size_t const TAILLEBUF            = 255;
 constexpr char const SECRET_INDICATOR[]     = "secret: ";

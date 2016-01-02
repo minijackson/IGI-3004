@@ -5,7 +5,7 @@
 
 #include <unistd.h>
 
-#include "gestionFichiersw.hpp"
+#include "gestion-fichiers.hpp"
 #include "pipe.hpp"
 
 constexpr size_t const TAILLEBUF = 255;

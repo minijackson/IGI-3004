@@ -24,7 +24,7 @@ int main() {
 			exit(1);
 		}
 
-		std::cout << getThisProcessID() << " Je suis le père" << std::endl;
+		std::cout << getThisProcessID() << " Je suis ton père" << std::endl;
 	}
 	return 0;
 }
