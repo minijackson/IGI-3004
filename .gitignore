@@ -1,3 +1,6 @@
+# Compiled Object files
+*.os
+
 # Binary files
 *.bin
 
