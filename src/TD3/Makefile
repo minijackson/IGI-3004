@@ -3,6 +3,12 @@ LDFLAGS = -L../../lib -lgestion-fichiers -lpipe
 
 all: testI2.bin testIII.bin
 
+debug: CXXFLAGS += -ggdb3
+debug: all
+
+release: CXXFLAGS += -O2
+release: all
+
 clean:
 	$(RM) *.bin *.o
 
@@ -12,4 +18,4 @@ clean:
 test%.bin: test%.cpp
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@
 
-.PHONY: all clean
+.PHONY: all debug release clean

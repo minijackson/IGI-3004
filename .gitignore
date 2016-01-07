@@ -1,6 +1,9 @@
 # Compiled Object files
 *.os
 
+# GDB History
+.gdb_history
+
 # Binary files
 *.bin
 

@@ -3,6 +3,12 @@ LDFLAGS = -L../../lib -lgestion-fichiers -lprocutils
 
 all: testIB1.bin testIB2.bin testIB3.bin testIIB.bin testIII1.bin testIII2.bin testIII3.bin
 
+debug: CXXFLAGS += -ggdb3
+debug: all
+
+release: CXXFLAGS += -O2
+release: all
+
 clean:
 	$(RM) *.bin *.o
 
@@ -18,4 +24,4 @@ testIIB.bin: testIIB.cpp testIB1.bin
 testIII%.bin: testIII%.cpp
 	$(CXX) $(LDFLAGS) $(CXXFLAGS) $^ -o $@
 
-.PHONY: all clean
+.PHONY: all debug release clean
