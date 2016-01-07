@@ -1,7 +1,7 @@
 CXXFLAGS= -Wall -Wextra -march=native -pipe -std=c++14 -D_GLIBCXX_USE_CXX11_ABI -I../../include/ -pthread
 LDFLAGS = -L../../lib -lgestion-fichiers -pthread
 
-all: testIa.bin
+all: testIa.bin testIIb.bin
 
 clean:
 	$(RM) *.bin *.o
