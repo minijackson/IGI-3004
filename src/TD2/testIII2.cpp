@@ -6,7 +6,7 @@
 #include "procutils.hpp"
 #include "gestion-fichiers.hpp"
 
-constexpr size_t const TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
 	try {
@@ -22,6 +22,8 @@ int main() {
 
 			file >> line;
 			std::cout << line;
+
+			wait(nullptr);
 
 			// file.~IFile();
 		}

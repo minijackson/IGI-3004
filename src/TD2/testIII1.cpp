@@ -6,7 +6,7 @@
 #include "procutils.hpp"
 #include "gestion-fichiers.hpp"
 
-constexpr size_t const TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
 	pid_t pid = fork();
@@ -28,5 +28,7 @@ int main() {
 			std::cerr << "Error: " << e.what() << std::endl;
 			return errno;
 		}
+
+		wait(nullptr);
 	}
 }

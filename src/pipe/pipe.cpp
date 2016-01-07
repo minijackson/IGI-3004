@@ -8,9 +8,7 @@
 #include <cerrno>
 #include <cstring>
 
-Pipe::Pipe(bool nonBlocking)
-  : pipeFd{}
-  , nonBlocking(nonBlocking) {
+DummyPipe::DummyPipe(bool nonBlocking) : pipeFd{} {
 	if(nonBlocking) {
 		if(pipe2(pipeFd, O_NONBLOCK) == -1) {
 			throw std::system_error(errno, std::system_category());
@@ -22,51 +20,32 @@ Pipe::Pipe(bool nonBlocking)
 	}
 }
 
+Pipe::Pipe(bool nonBlocking)
+      : DummyPipe(nonBlocking)
+      , IFile(pipeFd[0], 4096)
+      , OFile(pipeFd[1], 4096)
+      , nonBlocking(nonBlocking) {}
+
 Pipe::~Pipe() {
-	if(!readClosed) {
-		close(pipeFd[0]);
-	}
-
-	if(!writeClosed) {
-		close(pipeFd[1]);
-	}
-}
-
-Pipe& Pipe::operator<<(char const message[]) {
-	if(write(pipeFd[1], message, std::strlen(message)) == -1) {
-		throw std::ios_base::failure(std::strerror(errno),
-		                             std::error_code(errno, std::system_category()));
-	}
-	return *this;
-}
-
-Pipe& Pipe::operator>>(char message[]) {
-	char buffer(0);
-	int i = 0;
-	while((buffer != '\n') && (buffer != 0x04)) {
-		int status = read(pipeFd[0], &buffer, 1);
-		if(status > 0) {
-			message[i] = buffer;
-			++i;
-		} else if(status < 0) {
-			// If nothing is in the pipe and the pipe is non-blocking
-			if(nonBlocking && errno == EAGAIN) {
-				break;
-			} else {
-				throw std::system_error(errno, std::system_category());
-			}
-		}
-	}
-	message[i] = '\0';
-	return *this;
+	close();
 }
 
 void Pipe::readOnly() {
-	close(pipeFd[1]);
+	::close(pipeFd[1]);
 	writeClosed = true;
 }
 
 void Pipe::writeOnly() {
-	close(pipeFd[0]);
+	::close(pipeFd[0]);
 	readClosed = true;
+}
+
+void Pipe::close() {
+	if(!readClosed) {
+		::close(pipeFd[0]);
+	}
+
+	if(!writeClosed) {
+		::close(pipeFd[1]);
+	}
 }

@@ -4,11 +4,12 @@
 #include <cstring>
 
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "pipe.hpp"
 #include "gestion-fichiers.hpp"
 
-constexpr size_t const TAILLEBUF            = 255;
+constexpr size_t const TAILLEBUF            = 2048;
 constexpr char const SECRET_INDICATOR[]     = "secret: ";
 constexpr size_t const SECRET_INDICATOR_LEN = 8;
 
@@ -35,19 +36,18 @@ int main(int argc, char* argv[]) {
 				myPipe >> receivedMessage;
 
 				// Character 0x04 is EOT (end of transmission)
-				while(receivedMessage[0] != 0x04) {
+				while(!myPipe.hasEnded()) {
 					destinationFile << receivedMessage;
 					myPipe >> receivedMessage;
 				}
+				myPipe.close();
+
 			} catch(std::ios_base::failure const& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 				return e.code().value();
 			}
 		} else {
 			myPipe.writeOnly();
-
-			// Character 0x04 is EOT (end of transmission)
-			char const endMessage[] = {0x04, '\0'};
 
 			try {
 				IFile sourceFile(argv[1], TAILLEBUF);
@@ -59,13 +59,15 @@ int main(int argc, char* argv[]) {
 						myPipe << messageToTransmit;
 					}
 				}
-				myPipe << endMessage;
+				myPipe.close();
 
 			} catch(std::ios_base::failure const& e) {
-				myPipe << endMessage;
+				myPipe.close();
 				std::cerr << "Error: " << e.what() << std::endl;
 				return e.code().value();
 			}
+
+			wait(nullptr);
 
 		}
 	} catch(std::system_error const& e) {

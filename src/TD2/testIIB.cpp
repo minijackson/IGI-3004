@@ -25,6 +25,8 @@ int main() {
 		}
 
 		std::cout << getThisProcessID() << " Je suis ton père" << std::endl;
+
+		wait(nullptr);
 	}
 	return 0;
 }

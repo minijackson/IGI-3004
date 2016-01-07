@@ -39,24 +39,27 @@ int IFile::openFile(char const* filename) {
 }
 
 void IFile::getLine(char* buf) {
-	off_t currentPos = lseek(fd, 0, SEEK_CUR);
-	int status = read(fd, buf, bufSize);
-
-	if (status == 0) {
-		buf[0] = '\0';
-		ended = true;
-	} else if(status != -1) {
-		for(size_t i = 0 ; i < bufSize ; ++i) {
-			if(buf[i] == '\n') {
-				lseek(fd, currentPos + ((i+1)*sizeof(char)), SEEK_SET);
-				buf[i+1] = '\0';
-				break;
-			}
+	size_t i = 0;
+	do {
+		// Crash! Line too long
+		if(i >= bufSize) {
+			buf[0] = '\0';
+			ended = true;
+			return;
 		}
-	} else {
-		throw std::ios_base::failure("Cannot read file",
-		                             std::error_code(errno, std::system_category()));
-	}
+
+		int status = read(fd, &buf[i], 1);
+		if(status == 0) {
+			ended = true;
+			break;
+		} else if(status > 0) {
+			++i;
+		} else {
+			// If nothing is in the pipe and the pipe is non-blocking
+			throw std::system_error(errno, std::system_category());
+		}
+	} while(buf[i-1] != '\n');
+	buf[i] = '\0';
 }
 
 OFile::OFile(int const fd, size_t const bufSize)

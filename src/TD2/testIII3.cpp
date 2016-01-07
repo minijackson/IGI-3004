@@ -6,7 +6,7 @@
 #include "procutils.hpp"
 #include "gestion-fichiers.hpp"
 
-constexpr size_t const TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 2048;
 
 int main(int argc, char* argv[]) {
 
@@ -33,6 +33,8 @@ int main(int argc, char* argv[]) {
 
 			file >> line;
 			std::cout << line;
+
+			wait(nullptr);
 
 			// file.~IFile();
 		}

@@ -6,7 +6,7 @@
 
 #include "gestion-fichiers.hpp"
 
-constexpr size_t const TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 2048;
 
 char* c;
 

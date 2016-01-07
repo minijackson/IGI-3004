@@ -4,6 +4,7 @@
 #include <cstdio>
 
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "procutils.hpp"
 
@@ -23,6 +24,8 @@ int main() {
 	          << "	- PID du processus parent: " << std::setw(5) << getParentProcessID()
 	          << std::endl
 	          << "	- bonjour" << std::endl;
+
+	wait(nullptr);
 
 	return 0;
 }

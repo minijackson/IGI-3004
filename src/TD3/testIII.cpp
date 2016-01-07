@@ -4,17 +4,18 @@
 #include <csignal>
 
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "gestion-fichiers.hpp"
 #include "pipe.hpp"
 
-constexpr size_t const TAILLEBUF = 255;
+constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
 	signal(SIGUSR1, [](int sig) {
 		if(sig == SIGUSR1) {
 			std::cout << "\nToo late: safe closed" << std::endl;
-			wait();
+			wait(nullptr);
 			exit(EPERM);
 		}
 	});
@@ -56,6 +57,8 @@ int main() {
 				std::cerr << "Error: " << e.what() << std::endl;
 				return e.code().value();
 			}
+
+			wait(nullptr);
 		}
 
 	} catch(std::system_error const& e) {
