@@ -22,11 +22,9 @@ void* thread_print(void* thread_id) {
 
 int main() {
 	for(int i = 0; i < 3; ++i) {
-		sem_init(&sem[i], /* __pshared = */ 0, /* __value = */ 1);
-		if(i != 0) {
-			sem_wait(&sem[i]);
-		}
+		sem_init(&sem[i], /* __pshared = */ 0, /* __value = */ 0);
 	}
+	sem_post(&sem[0]);
 
 	pthread_t threadIds[3];
 

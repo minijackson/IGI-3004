@@ -1,5 +1,7 @@
 project('Système d\'exploitation', 'cpp', license: 'MIT')
 
+add_global_arguments(['-std=c++14', '-fdiagnostics-color=always'], language: 'cpp')
+
 thread_dep = dependency('threads')
 
 subdir('./src/gestion-fichiers')
