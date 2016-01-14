@@ -10,8 +10,7 @@
 
 constexpr size_t const TAILLEBUF = 2048;
 
-std::unique_ptr<char[]> c(new char[TAILLEBUF]);
-sem_t dataLock, readingStartLock;
+sem_t dataLock;
 
 struct ReadingThreadData {
 	std::string filename;
@@ -36,15 +35,12 @@ void* readingThreadMain(void* voidThreadData) {
 
 	IFile source(threadData->filename.c_str(), TAILLEBUF);
 
-	sem_wait(&readingStartLock);
-
 	while(!source.hasEnded()) {
+		std::cout << "[Reading] Waiting..." << std::endl;
 		sem_wait(&dataLock);
 		readAndStore(source, threadData->data);
 		sem_post(&dataLock);
 	}
-
-	sem_post(&readingStartLock);
 
 	std::cout << "[Reading]: Sending End-of-Transmission" << std::endl;
 	threadData->data[0] = 0x04;
@@ -75,10 +71,7 @@ void* transmittingThreadMain(void* voidThreadData) {
 
 	char previous[TAILLEBUF];
 
-	sem_wait(&dataLock);
 	std::strncpy(previous, threadData->data, TAILLEBUF);
-	sem_post(&dataLock);
-	sem_post(&readingStartLock);
 
 	while(threadData->data[0] != 0x04) {
 		if(std::strncmp(previous, threadData->data, TAILLEBUF)) {
@@ -89,6 +82,8 @@ void* transmittingThreadMain(void* voidThreadData) {
 		} else {
 			sem_post(&dataLock);
 		}
+		std::cout << "[Transmission] Waiting..." << std::endl;
+		sem_wait(&dataLock);
 	}
 	std::cout << "[Transmission]: Received End-of-Transmission" << std::endl;
 
@@ -102,11 +97,11 @@ int main(int argc, char* argv[]) {
 		return EINVAL;
 	}
 
-	sem_init(&dataLock, /* __pshared = */ 0, /* __value = */ 1);
-	sem_init(&readingStartLock, /* __pshared = */ 0, /* __value = */ 0);
+	sem_init(&dataLock, /* __pshared = */ 0, /* __value = */ 0);
 
 	pthread_t transmittingThread, readingThread;
 
+	std::unique_ptr<char[]> c(new char[TAILLEBUF]);
 	c.get()[0] = '\0';
 
 	transmittingThreadData->filename = argv[2];
