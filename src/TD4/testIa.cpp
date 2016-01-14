@@ -17,8 +17,6 @@ struct ReadingThreadData {
 	char* data;
 };
 
-std::unique_ptr<struct ReadingThreadData> readingThreadData(new struct ReadingThreadData);
-
 void readAndStore(IFile& source, char* data) {
 	char line[TAILLEBUF];
 	source >> line;
@@ -53,9 +51,6 @@ struct TransmittingThreadData {
 	std::string filename;
 	char* data;
 };
-
-std::unique_ptr<struct TransmittingThreadData> transmittingThreadData(
-  new struct TransmittingThreadData);
 
 void getAndTransmit(OFile& destination, char* data) {
 	destination << data;
@@ -104,11 +99,14 @@ int main(int argc, char* argv[]) {
 	std::unique_ptr<char[]> c(new char[TAILLEBUF]);
 	c.get()[0] = '\0';
 
+	std::unique_ptr<struct TransmittingThreadData> transmittingThreadData(
+	  new struct TransmittingThreadData);
 	transmittingThreadData->filename = argv[2];
-	transmittingThreadData->data = c.get();
+	transmittingThreadData->data     = c.get();
 
+	std::unique_ptr<struct ReadingThreadData> readingThreadData(new struct ReadingThreadData);
 	readingThreadData->filename = argv[1];
-	readingThreadData->data = c.get();
+	readingThreadData->data     = c.get();
 
 	pthread_create(&transmittingThread, NULL, transmittingThreadMain,
 	               reinterpret_cast<void*>(transmittingThreadData.get()));
