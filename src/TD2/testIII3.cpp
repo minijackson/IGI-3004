@@ -11,6 +11,7 @@ constexpr size_t const TAILLEBUF = 2048;
 int main(int argc, char* argv[]) {
 
 	char const* filename;
+
 	if(argc == 1) {
 		filename = "fichierTest.txt";
 	} else if(argc == 2) {
