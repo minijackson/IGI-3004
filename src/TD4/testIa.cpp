@@ -33,10 +33,11 @@ void* readingThreadMain(void* voidThreadData) {
 
 	std::shared_ptr<sem_t> dataLock = threadData->dataLock;
 	std::shared_ptr<char> data = threadData->data;
-	std::cout << "[Reading]: Ready!" << std::endl;
-	sem_post(threadData->ready);
 
 	IFile source(threadData->filename.c_str(), TAILLEBUF);
+
+	std::cout << "[Reading]: Ready!" << std::endl;
+	sem_post(threadData->ready);
 
 	while(!source.hasEnded()) {
 		std::cout << "[Reading] Waiting..." << std::endl;
@@ -48,7 +49,7 @@ void* readingThreadMain(void* voidThreadData) {
 	std::cout << "[Reading]: Sending End-of-Transmission" << std::endl;
 	data.get()[0] = 0x04;
 
-	std::cout << "[Reading]: Thread exiting" << std::endl;
+	std::cout << "[Reading]: Goodbye!" << std::endl;
 	pthread_exit(NULL);
 }
 
@@ -71,10 +72,11 @@ void* transmittingThreadMain(void* voidThreadData) {
 
 	std::shared_ptr<sem_t> dataLock = threadData->dataLock;
 	std::shared_ptr<char> data = threadData->data;
-	std::cout << "[Transmission]: Ready!" << std::endl;
-	sem_post(threadData->ready);
 
 	OFile destination(threadData->filename.c_str(), TAILLEBUF);
+
+	std::cout << "[Transmission]: Ready!" << std::endl;
+	sem_post(threadData->ready);
 
 	char previous[TAILLEBUF];
 
@@ -94,7 +96,7 @@ void* transmittingThreadMain(void* voidThreadData) {
 	}
 	std::cout << "[Transmission]: Received End-of-Transmission" << std::endl;
 
-	std::cout << "[Transmission]: Thread exiting" << std::endl;
+	std::cout << "[Transmission]: Goodbye!" << std::endl;
 	pthread_exit(NULL);
 }
 
@@ -135,6 +137,9 @@ int main(int argc, char* argv[]) {
 	               reinterpret_cast<void*>(transmittingThreadData.get()));
 	pthread_create(&readingThread, NULL, readingThreadMain,
 	               reinterpret_cast<void*>(readingThreadData.get()));
+
+	pthread_detach(transmittingThread);
+	pthread_detach(readingThread);
 
 	std::cout << "[Main]: Waiting for Reading and Transmission to be Ready" << std::endl;
 	sem_wait(readingReady.get());
