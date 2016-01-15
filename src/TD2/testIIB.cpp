@@ -13,8 +13,7 @@ int main() {
 		exit(errno);
 	} else if(pid == 0) {
 		char commandName[] = "./testIB1.bin";
-		char* const command[] = {commandName, nullptr};
-		execve(commandName, command, environ);
+		execl(commandName, commandName);
 	} else {
 		int status(0);
 		wait(&status);

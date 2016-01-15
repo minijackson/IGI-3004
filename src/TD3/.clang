@@ -1,1 +1,2 @@
--I../../include/
+-I../gestion-fichiers
+-I../pipe
