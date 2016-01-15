@@ -7,6 +7,7 @@ thread_dep = dependency('threads')
 subdir('./src/gestion-fichiers')
 subdir('./src/pipe')
 subdir('./src/procutils')
+subdir('./src/semaphore')
 
 subdir('./src/TD1')
 subdir('./src/TD2')
