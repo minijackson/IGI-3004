@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include <pthread.h>
-#include <semaphore.h>
 
-sem_t sem[3];
+#include "semaphore.hpp"
+
+Semaphore sem[3];
 
 void* thread_print(void* thread_id) {
 
@@ -12,9 +13,9 @@ void* thread_print(void* thread_id) {
 	int const waitingSemaphoreID = i - 1, releasingSemaphoreID = i % 3;
 
 	for(int j = 0; j < 10; j++) {
-		sem_wait(&sem[waitingSemaphoreID]);
+		sem[waitingSemaphoreID].wait();
 		std::cout << "Affichage " << j + 1 << " du thread " << i << std::endl;
-		sem_post(&sem[releasingSemaphoreID]);
+		sem[releasingSemaphoreID].post();
 	}
 
 	pthread_exit(nullptr);
@@ -22,9 +23,9 @@ void* thread_print(void* thread_id) {
 
 int main() {
 	for(int i = 0; i < 3; ++i) {
-		sem_init(&sem[i], /* __pshared = */ 0, /* __value = */ 0);
+		sem[i] = Semaphore(0);
 	}
-	sem_post(&sem[0]);
+	sem[0].post();
 
 	pthread_t threadIds[3];
 

@@ -4,7 +4,6 @@
 #include <cstring>
 
 #include <pthread.h>
-#include <semaphore.h>
 
 #include "gestion-fichiers.hpp"
 #include "semaphore.hpp"
