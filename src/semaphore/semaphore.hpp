@@ -17,7 +17,7 @@ public:
 	 *
 	 * \throws std::system_error when the semaphore cannot be created.
 	 */
-	Semaphore() throw(std::system_error);
+	Semaphore() noexcept(false);
 
 	/*! \brief Semaphore constructor.
 	 *
@@ -25,7 +25,7 @@ public:
 	 *
 	 * \throws std::system_error when the semaphore cannot be created.
 	 */
-	explicit Semaphore(unsigned int value) throw(std::system_error);
+	explicit Semaphore(unsigned int value) noexcept(false);
 
 	/*! \brief Semaphore destructor
 	 *
@@ -38,13 +38,13 @@ public:
 	  *
 	  * \throws std::system_error when the semaphore cannot be waited on.
 	  */
-	 void wait() throw(std::system_error);
+	 void wait() noexcept(false);
 
 	 /*! \brief Increase the availability of the semaphore
 	  *
 	  * \throws std::system_error when the semaphore value cannot be increased.
 	  */
-	 void post() throw(std::system_error);
+	 void post() noexcept(false);
 
 	 /*! \brief Get the current value of the semaphore.
 	  *
@@ -52,7 +52,7 @@ public:
 	  *
 	  * \throws std::system_error when the value cannot be recovered.
 	  */
-	 int getValue() throw(std::system_error);
+	 int getValue() noexcept(false);
 
 protected:
 	sem_t semaphore;
