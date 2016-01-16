@@ -1,6 +1,6 @@
-project('Système d\'exploitation', 'cpp', license: 'MIT')
+project('Système d\'exploitation', 'cpp', default_options : ['cpp_std=c++14'], license: 'MIT')
 
-add_global_arguments(['-std=c++14', '-fdiagnostics-color=always'], language: 'cpp')
+add_global_arguments('-fdiagnostics-color=always', language: 'cpp')
 
 thread_dep = dependency('threads')
 
@@ -8,6 +8,7 @@ subdir('./src/gestion-fichiers')
 subdir('./src/pipe')
 subdir('./src/procutils')
 subdir('./src/semaphore')
+subdir('./src/thread')
 
 subdir('./src/TD1')
 subdir('./src/TD2')
