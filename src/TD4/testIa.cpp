@@ -115,17 +115,17 @@ int main(int argc, char* argv[]) {
 
 	std::unique_ptr<struct TransmittingThreadData> transmittingThreadData(
 	  new struct TransmittingThreadData);
-	transmittingThreadData->filename    = argv[2];
+	transmittingThreadData->filename    = std::move(argv[2]);
 	transmittingThreadData->data        = c;
 	transmittingThreadData->readingLock = readingLock;
 	transmittingThreadData->writingLock = writingLock;
 	transmittingThreadData->ready       = readingReady.get();
 
 	std::unique_ptr<struct ReadingThreadData> readingThreadData(new struct ReadingThreadData);
-	readingThreadData->filename    = argv[1];
+	readingThreadData->filename    = std::move(argv[1]);
 	readingThreadData->data        = std::move(c);
-	readingThreadData->readingLock = readingLock;
-	readingThreadData->writingLock = writingLock;
+	readingThreadData->readingLock = std::move(readingLock);
+	readingThreadData->writingLock = std::move(writingLock);
 	readingThreadData->ready       = transmissionReady.get();
 
 	pthread_create(&transmittingThread, NULL, transmittingThreadMain,
