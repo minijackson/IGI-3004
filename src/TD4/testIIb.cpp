@@ -1,15 +1,11 @@
 #include <iostream>
 
-#include <pthread.h>
-
 #include "semaphore.hpp"
+#include "thread.hpp"
 
 Semaphore sem[3];
 
-void* thread_print(void* thread_id) {
-
-	long int i = reinterpret_cast<long int>(thread_id);
-
+void thread_print(size_t i) {
 	int const waitingSemaphoreID = i - 1, releasingSemaphoreID = i % 3;
 
 	for(int j = 0; j < 10; j++) {
@@ -17,8 +13,6 @@ void* thread_print(void* thread_id) {
 		std::cout << "Affichage " << j + 1 << " du thread " << i << std::endl;
 		sem[releasingSemaphoreID].post();
 	}
-
-	pthread_exit(nullptr);
 }
 
 int main() {
@@ -27,13 +21,13 @@ int main() {
 	}
 	sem[0].post();
 
-	pthread_t threadIds[3];
+	Thread threads[3];
 
-	for(long int i = 1; i <= 3; ++i) {
-		pthread_create(&threadIds[i - 1], nullptr, thread_print, reinterpret_cast<void*>(i));
+	for(size_t i = 1; i <= 3; ++i) {
+		threads[i - 1].start(thread_print, i);
 	}
 
 	for(int i = 0; i < 3; ++i) {
-		pthread_join(threadIds[i], nullptr);
+		threads[i].join();
 	}
 }
