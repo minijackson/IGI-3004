@@ -35,28 +35,25 @@ public:
 	 *
 	 * \throws std::system_error when the thread cannot be created.
 	 */
-	template <typename... Arguments>
-	void start(void (*threadMainFunction)(Arguments...),
-	                Arguments... args) throw(std::system_error);
+	template <typename Functor, typename... Arguments>
+	void start(Functor&& threadMainFunction, Arguments&&... args) noexcept(false);
 
 	/*! \brief Detach the thread.
 	 *
 	 * \throws std::system_error when the thread cannot be detached.
 	 */
-	void detach() throw(std::system_error);
+	void detach() noexcept(false);
 
 	/*! \brief Join the thread.
 	 *
 	 * \throws std::system_error when the thread cannot be joined.
 	 */
-	void join() throw(std::system_error);
+	void join() noexcept(false);
 
 	pthread_t& getThread() { return thread; }
 
 protected:
 	pthread_t thread;
-
-	void* (*wrapperFunction)(void*);
 
 	bool joinable = false;
 
@@ -66,7 +63,7 @@ protected:
 	 *
 	 * \param seq an index_sequence with the indices of the data tuple.
 	 */
-	template <typename... Arguments, size_t... I>
+	template <typename Functor, typename... Arguments, size_t... I>
 	static constexpr auto makeWrapperFunction(std::index_sequence<0, I...> seq);
 };
 
