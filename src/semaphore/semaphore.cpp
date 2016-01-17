@@ -1,12 +1,5 @@
 #include "semaphore.hpp"
 
-Semaphore::Semaphore() noexcept(false)
-      : semaphore() {
-	if(sem_init(&semaphore, /* __pshared = */ 0, /* __value = */ 1) == -1) {
-		throw std::system_error(errno, std::system_category());
-	}
-}
-
 Semaphore::Semaphore(unsigned int value) noexcept(false)
       : semaphore() {
 	if(sem_init(&semaphore, /* __pshared = */ 0, value) == -1) {
@@ -38,4 +31,8 @@ int Semaphore::getValue() noexcept(false) {
 	}
 
 	return value;
+}
+
+sem_t Semaphore::getPosixSemaphore() const {
+	return semaphore;
 }

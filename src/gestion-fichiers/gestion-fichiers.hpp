@@ -35,11 +35,30 @@ public:
 	 */
 	IFile& operator>>(char* line);
 
+	/*! \brief Get the file's file descriptor.
+	 *
+	 * \return the file's file descriptor.
+	 */
+	int getFd() const;
+
+	/*! \brief Get the size of the buffer.
+	 *
+	 * \return the size of the buffer.
+	 */
+	size_t getBufSize() const;
+
 	/*! \brief Check if the end-of-file has been reached.
 	 *
 	 * \return `true` if the end-of-file has been reached.
 	 */
-	bool hasEnded();
+	bool hasEnded() const;
+
+	/*! \brief Check if the object opened file.
+	 *
+	 * \return `true` if the object opened the file.
+	 */
+	bool hasOpenedThefile() const;
+
 protected:
 	/*! \brief Open the file in read-only mode.
 	 *
@@ -109,6 +128,25 @@ public:
 	 * \return the current object (for chaining operator<<).
 	 */
 	OFile& operator<<(char const* line);
+
+	/*! \brief Get the file's file descriptor.
+	 *
+	 * \return the file's file descriptor.
+	 */
+	int getFd() const;
+
+	/*! \brief Get the size of the buffer.
+	 *
+	 * \return the size of the buffer.
+	 */
+	size_t getBufSize() const;
+
+	/*! \brief Check if the object opened file.
+	 *
+	 * \return `true` if the object opened the file.
+	 */
+	bool hasOpenedThefile() const;
+
 protected:
 
 	/*! \brief Open the file in write mode.

@@ -6,12 +6,13 @@
 #include <ios>
 
 IFile::IFile(int const fd, size_t const bufSize)
-  : fd(fd)
-  , bufSize(bufSize) {}
+      : fd(fd)
+      , bufSize(bufSize) {}
 
 IFile::IFile(char const* filename, size_t const bufSize)
-  : fd(openFile(filename))
-  , bufSize(bufSize) {}
+      : fd(openFile(filename))
+      , bufSize(bufSize)
+      , openedTheFile(true) {}
 
 IFile::~IFile() {
 	if(openedTheFile) {
@@ -24,8 +25,20 @@ IFile& IFile::operator>>(char* line) {
 	return *this;
 }
 
-bool IFile::hasEnded() {
+int IFile::getFd() const {
+	return fd;
+}
+
+size_t IFile::getBufSize() const {
+	return bufSize;
+}
+
+bool IFile::hasEnded() const {
 	return ended;
+}
+
+bool IFile::hasOpenedThefile() const {
+	return openedTheFile;
 }
 
 int IFile::openFile(char const* filename) {
@@ -34,7 +47,6 @@ int IFile::openFile(char const* filename) {
 		throw std::ios_base::failure("Cannot open file for reading",
 		                             std::error_code(errno, std::system_category()));
 	}
-	openedTheFile = true;
 	return fd;
 }
 
@@ -62,12 +74,13 @@ void IFile::getLine(char* buf) {
 }
 
 OFile::OFile(int const fd, size_t const bufSize)
-  : fd(fd)
-  , bufSize(bufSize) {}
+      : fd(fd)
+      , bufSize(bufSize) {}
 
 OFile::OFile(char const* filename, size_t const bufSize)
-  : fd(openFile(filename))
-  , bufSize(bufSize) {}
+      : fd(openFile(filename))
+      , bufSize(bufSize)
+      , openedTheFile(true) {}
 
 OFile::~OFile() {
 	if(openedTheFile) {
@@ -78,6 +91,18 @@ OFile::~OFile() {
 OFile& OFile::operator<<(char const* line) {
 	writeLine(line);
 	return *this;
+}
+
+int OFile::getFd() const {
+	return fd;
+}
+
+size_t OFile::getBufSize() const {
+	return bufSize;
+}
+
+bool OFile::hasOpenedThefile() const {
+	return openedTheFile;
 }
 
 int OFile::openFile(char const* filename) {

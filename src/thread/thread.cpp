@@ -24,3 +24,11 @@ void Thread::join() noexcept(false) {
 	}
 	joinable = false;
 }
+
+pthread_t Thread::getPosixThread() const {
+	return thread;
+}
+
+bool Thread::isJoinable() const {
+	return joinable;
+}

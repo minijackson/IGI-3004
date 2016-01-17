@@ -15,4 +15,6 @@ subdir('./src/TD2')
 subdir('./src/TD3')
 subdir('./src/TD4')
 
+subdir('./tests')
+
 # vim: ft=cmake

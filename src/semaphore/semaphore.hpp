@@ -11,21 +11,13 @@
  */
 class Semaphore {
 public:
-	/*! \brief Semaphore default constructor.
-	 *
-	 * This will initialize the semaphore with 1 as initial value.
-	 *
-	 * \throws std::system_error when the semaphore cannot be created.
-	 */
-	Semaphore() noexcept(false);
-
 	/*! \brief Semaphore constructor.
 	 *
 	 * \param value the initial value of the semaphore.
 	 *
 	 * \throws std::system_error when the semaphore cannot be created.
 	 */
-	explicit Semaphore(unsigned int value) noexcept(false);
+	explicit Semaphore(unsigned int value = 1) noexcept(false);
 
 	Semaphore(const Semaphore&) noexcept(true) = default;
 	Semaphore& operator=(const Semaphore&) noexcept(true) = default;
@@ -58,6 +50,14 @@ public:
 	  */
 	 int getValue() noexcept(false);
 
+	 /*! \brief Get the inner POSIX semaphore.
+	  *
+	  * \return the inner POSIX semaphore.
+	  */
+	 sem_t getPosixSemaphore() const;
+
 protected:
+	/*! \brief The inner POSIX semaphore.
+	 */
 	sem_t semaphore;
 };

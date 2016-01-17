@@ -10,6 +10,19 @@
  * \sa Pipe
  */
 class DummyPipe {
+public:
+	/*! \brief Get the file descriptor of the pipe's reading end.
+	 *
+	 * \return the file descriptor of the pipe's reading end.
+	 */
+	int getReadingFd() const;
+
+	/*! \brief Get the file descriptor of the pipe's writing end.
+	 *
+	 * \return the file descriptor of the pipe's writing end.
+	 */
+	int getWritingFd() const;
+
 protected:
 	/*! \brief DummyPipe constructor.
 	 *
@@ -64,6 +77,24 @@ public:
 	 * Will close both ends of the pipe. Called by the user and by the destructor.
 	 */
 	void close();
+
+	/*! \brief Check if the pipe is non-blocking.
+	 *
+	 * \return `true` if the pipe is non-blocking.
+	 */
+	bool isNonBlocking() const;
+
+	/*! \brief Check if reading end of the pipe is closed.
+	 *
+	 * \return `true` if the reading end of the pipe is closed.
+	 */
+	bool isReadClosed() const;
+
+	/*! \brief Check if writing end of the pipe is closed.
+	 *
+	 * \return `true` if the writing end of the pipe is closed.
+	 */
+	bool isWriteClosed() const;
 
 protected:
 	/*! \brief `true` if the pipe is opened in non-blocking mode.

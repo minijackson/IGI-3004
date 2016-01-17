@@ -50,11 +50,29 @@ public:
 	 */
 	void join() noexcept(false);
 
-	pthread_t& getThread() { return thread; }
+	/*! \brief Get the inner POSIX thread.
+	 *
+	 * \return the inner POSIX thread.
+	 */
+	pthread_t getPosixThread() const;
+
+	/*! \brief Check if the Thread is joinable.
+	 *
+	 * A Thread is joinable if it started and is not detached.
+	 *
+	 * \return `true` if the Thread is joinable.
+	 */
+	bool isJoinable() const;
 
 protected:
+	/*! \brief The inner POSIX thread.
+	 */
 	pthread_t thread;
 
+	/*! \brief `true` if the Thread is joinable.
+	 *
+	 * A Thread is joinable if it started and is not detached.
+	 */
 	bool joinable = false;
 
 	/*! \brief Create the wrapper that will be called by pthread_create

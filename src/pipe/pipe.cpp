@@ -20,6 +20,14 @@ DummyPipe::DummyPipe(bool nonBlocking) : pipeFd{} {
 	}
 }
 
+int DummyPipe::getReadingFd() const {
+	return pipeFd[0];
+}
+
+int DummyPipe::getWritingFd() const {
+	return pipeFd[1];
+}
+
 Pipe::Pipe(bool nonBlocking)
       : DummyPipe(nonBlocking)
       , IFile(pipeFd[0], 4096)
@@ -48,4 +56,16 @@ void Pipe::close() {
 	if(!writeClosed) {
 		::close(pipeFd[1]);
 	}
+}
+
+bool Pipe::isNonBlocking() const {
+	return nonBlocking;
+}
+
+bool Pipe::isReadClosed() const {
+	return readClosed;
+}
+
+bool Pipe::isWriteClosed() const {
+	return writeClosed;
 }
