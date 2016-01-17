@@ -18,14 +18,16 @@ BOOST_AUTO_TEST_CASE(semaphore_creation) {
 
 BOOST_AUTO_TEST_CASE(semaphore_copy_construction) {
 	Semaphore sem;
-	sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+	//sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+
+	Semaphore(sem).wait();
 
 	//BOOST_CHECK_EQUAL(referencePosixSemaphore, Semaphore(sem).getPosixSemaphore());
 }
 
 BOOST_AUTO_TEST_CASE(semaphore_copy_assignment) {
 	Semaphore sem, sem1;
-	sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+	//sem_t referencePosixSemaphore = sem.getPosixSemaphore();
 
 	sem1 = sem;
 
@@ -34,14 +36,16 @@ BOOST_AUTO_TEST_CASE(semaphore_copy_assignment) {
 
 BOOST_AUTO_TEST_CASE(semaphore_move_construction) {
 	Semaphore sem;
-	sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+	//sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+	
+	Semaphore(std::move(sem)).wait();
 
 	//BOOST_CHECK_EQUAL(referencePosixSemaphore, Semaphore(std::move(sem)).getPosixSemaphore());
 }
 
 BOOST_AUTO_TEST_CASE(semaphore_move_assignment) {
 	Semaphore sem, sem1;
-	sem_t referencePosixSemaphore = sem.getPosixSemaphore();
+	//sem_t referencePosixSemaphore = sem.getPosixSemaphore();
 
 	sem1 = std::move(sem);
 

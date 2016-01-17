@@ -32,14 +32,14 @@ BOOST_AUTO_TEST_CASE(thread_start) {
 	myOtherThread.join();
 }
 
-struct A {
+typedef struct {
 	short i;
-};
+} A;
 class B {};
 union C {};
 
 A myA = {42};
-struct B myB;
+B myB;
 C myC;
 
 BOOST_AUTO_TEST_CASE(thread_variadic_start) {
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(thread_variadic_start) {
 	A otherA = {42};
 
 	myThread
-	  .start([](A a, A const ac, A& ar, A const& acr, A&& am, A* ap, A const* acp, struct B b, C c, int i, auto y) {
+	  .start([](A a, A const ac, A& ar, A const& acr, A&& am, A* ap, A const* acp, B b, C c, int i, auto y) {
 		  BOOST_CHECK_NE(&a, &myA);
 		  BOOST_CHECK_EQUAL(a.i, 42);
 		  BOOST_CHECK_NE(&ac, &myA);
@@ -57,6 +57,8 @@ BOOST_AUTO_TEST_CASE(thread_variadic_start) {
 		  BOOST_CHECK_EQUAL(am.i, 42);
 		  BOOST_CHECK_EQUAL(ap, &myA);
 		  BOOST_CHECK_EQUAL(acp, &myA);
+		  BOOST_CHECK((std::is_same<B, decltype(b)>::value));
+		  BOOST_CHECK((std::is_same<C, decltype(c)>::value));
 		  BOOST_CHECK_EQUAL(i, 42);
 		  BOOST_CHECK_EQUAL(y, 'y');
 	  }, myA, myA, std::ref(myA), std::ref(myA), std::move(otherA), &myA, &myA, myB, myC, 42, 'y');
