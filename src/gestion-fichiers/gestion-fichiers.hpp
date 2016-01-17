@@ -49,13 +49,13 @@ protected:
 	 *
 	 * \return the opened file's file descriptor.
 	 */
-	int openFile(char const* filename);
+	int openFile(char const* filename) noexcept(false);
 
 	/*! \brief Read one line of the file.
 	 *
 	 * \param buf the buffer to write the line to.
 	 */
-	void getLine(char* buf);
+	void getLine(char* buf) noexcept(false);
 
 	/*! \brief The file descriptor of the current file.
 	 */
@@ -121,13 +121,13 @@ protected:
 	 *
 	 * \return the opened file's file descriptor.
 	 */
-	int openFile(char const* filename);
+	int openFile(char const* filename) noexcept(false);
 
 	/*! \brief Write one line to the file.
 	 *
 	 * \param content the line to write.
 	 */
-	void writeLine(char const* content);
+	void writeLine(char const* content) noexcept(false);
 
 	/*! \brief The file descriptor of the current file.
 	 */

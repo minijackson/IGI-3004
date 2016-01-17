@@ -55,7 +55,6 @@ void IFile::getLine(char* buf) {
 		} else if(status > 0) {
 			++i;
 		} else {
-			// If nothing is in the pipe and the pipe is non-blocking
 			throw std::system_error(errno, std::system_category());
 		}
 	} while(buf[i-1] != '\n');

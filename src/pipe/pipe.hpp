@@ -17,7 +17,7 @@ protected:
 	 *
 	 * \param nonBlocking `true` if the pipe must be non-blocking.
 	 */
-	explicit DummyPipe(bool nonBlocking);
+	explicit DummyPipe(bool nonBlocking) noexcept(false);
 
 	/*! \brief The file descriptors of the opened pipe.
 	 */
