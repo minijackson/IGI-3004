@@ -7,16 +7,9 @@
 
 #include "gestion-fichiers.hpp"
 #include "semaphore.hpp"
+#include "thread.hpp"
 
 constexpr size_t const TAILLEBUF = 2048;
-
-struct ReadingThreadData {
-	std::string filename;
-	std::shared_ptr<char> data;
-	std::shared_ptr<Semaphore> readingLock;
-	std::shared_ptr<Semaphore> writingLock;
-	Semaphore* ready;
-};
 
 void readAndStore(IFile& source, char* data) {
 	char line[TAILLEBUF];
@@ -26,70 +19,50 @@ void readAndStore(IFile& source, char* data) {
 	std::strncpy(data, line, TAILLEBUF);
 }
 
-void* readingThreadMain(void* voidThreadData) {
+void readingThreadMain(std::string filename,
+                       char data[],
+                       Semaphore& readingLock,
+                       Semaphore& writingLock) {
+
 	std::cout << "[Reading]: Thread spawned." << std::endl;
 
-	struct ReadingThreadData* threadData =
-	  reinterpret_cast<struct ReadingThreadData*>(voidThreadData);
-
-	std::shared_ptr<Semaphore> readingLock = threadData->readingLock;
-	std::shared_ptr<Semaphore> writingLock = threadData->writingLock;
-	std::shared_ptr<char> data             = threadData->data;
-
-	IFile source(threadData->filename.c_str(), TAILLEBUF);
-
-	std::cout << "[Reading]: Ready!" << std::endl;
-	threadData->ready->post();
+	IFile source(filename.c_str(), TAILLEBUF);
 
 	while(!source.hasEnded()) {
-		readingLock->wait();
-		readAndStore(source, data.get());
-		writingLock->post();
+		readingLock.wait();
+		readAndStore(source, data);
+		writingLock.post();
 	}
 
 	std::cout << "[Reading]: Sending End-of-Transmission" << std::endl;
-	data.get()[0] = 0x04;
-	writingLock->post();
+	data[0] = 0x04;
+	writingLock.post();
 
 	std::cout << "[Reading]: Goodbye!" << std::endl;
 	pthread_exit(NULL);
 }
 
-struct TransmittingThreadData {
-	std::string filename;
-	std::shared_ptr<char> data;
-	std::shared_ptr<Semaphore> readingLock;
-	std::shared_ptr<Semaphore> writingLock;
-	Semaphore* ready;
-};
-
 void getAndTransmit(OFile& destination, char* data) {
 	destination << data;
 }
 
-void* transmittingThreadMain(void* voidThreadData) {
+void transmittingThreadMain(std::string filename,
+                            char data[],
+                            Semaphore& readingLock,
+                            Semaphore& writingLock) {
+
 	std::cout << "[Transmission]: Thread spawned." << std::endl;
 
-	struct TransmittingThreadData* threadData =
-	  reinterpret_cast<struct TransmittingThreadData*>(voidThreadData);
+	OFile destination(filename.c_str(), TAILLEBUF);
 
-	std::shared_ptr<Semaphore> readingLock = threadData->readingLock;
-	std::shared_ptr<Semaphore> writingLock = threadData->writingLock;
-	std::shared_ptr<char> data             = threadData->data;
+	writingLock.wait();
 
-	OFile destination(threadData->filename.c_str(), TAILLEBUF);
-
-	std::cout << "[Transmission]: Ready!" << std::endl;
-	threadData->ready->post();
-
-	writingLock->wait();
-
-	while(data.get()[0] != 0x04) {
-		destination << data.get();
-		readingLock->post();
+	while(data[0] != 0x04) {
+		destination << data;
+		readingLock.post();
 		std::cout << "[Transmission]: Line transmitted." << std::endl;
 
-		writingLock->wait();
+		writingLock.wait();
 	}
 	std::cout << "[Transmission]: Received End-of-Transmission" << std::endl;
 
@@ -103,42 +76,26 @@ int main(int argc, char* argv[]) {
 		return EINVAL;
 	}
 
-	std::shared_ptr<Semaphore> readingLock(new Semaphore(1));
-	std::shared_ptr<Semaphore> writingLock(new Semaphore(0));
-	std::unique_ptr<Semaphore> readingReady(new Semaphore(0));
-	std::unique_ptr<Semaphore> transmissionReady(new Semaphore(0));
+	auto readingLock = Semaphore(1), writingLock = Semaphore(0), readingReady = Semaphore(0),
+	     transmissionReady = Semaphore(0);
 
-	pthread_t transmittingThread, readingThread;
-
-	std::shared_ptr<char> c(new char[TAILLEBUF], std::default_delete<char[]>());
+	auto c = std::make_unique<char[]>(TAILLEBUF);
 	c.get()[0] = '\0';
 
-	std::unique_ptr<struct TransmittingThreadData> transmittingThreadData(
-	  new struct TransmittingThreadData);
-	transmittingThreadData->filename    = std::move(argv[2]);
-	transmittingThreadData->data        = c;
-	transmittingThreadData->readingLock = readingLock;
-	transmittingThreadData->writingLock = writingLock;
-	transmittingThreadData->ready       = readingReady.get();
+	Thread transmittingThread, readingThread;
 
-	std::unique_ptr<struct ReadingThreadData> readingThreadData(new struct ReadingThreadData);
-	readingThreadData->filename    = std::move(argv[1]);
-	readingThreadData->data        = std::move(c);
-	readingThreadData->readingLock = std::move(readingLock);
-	readingThreadData->writingLock = std::move(writingLock);
-	readingThreadData->ready       = transmissionReady.get();
+	transmittingThread.start(transmittingThreadMain,
+	                         std::move(argv[2]),
+	                         c.get(),
+	                         std::ref(readingLock),
+	                         std::ref(writingLock));
 
-	pthread_create(&transmittingThread, NULL, transmittingThreadMain,
-	               reinterpret_cast<void*>(transmittingThreadData.get()));
-	pthread_create(&readingThread, NULL, readingThreadMain,
-	               reinterpret_cast<void*>(readingThreadData.get()));
+	readingThread.start(
+	  readingThreadMain, std::move(argv[1]), c.get(), std::ref(readingLock), std::ref(writingLock));
 
-	pthread_detach(transmittingThread);
-	pthread_detach(readingThread);
-
-	std::cout << "[Main]: Waiting for Reading and Transmission to be Ready" << std::endl;
-	readingReady->wait();
-	transmissionReady->wait();
+	std::cout << "[Main]: Waiting for Reading and Transmission to finish" << std::endl;
+	transmittingThread.join();
+	readingThread.join();
 
 	std::cout << "[Main]: Goodbye!" << std::endl;
 	pthread_exit(NULL);
