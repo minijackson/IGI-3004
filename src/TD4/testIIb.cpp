@@ -3,6 +3,12 @@
 #include "semaphore.hpp"
 #include "thread.hpp"
 
+/*=====================*/
+/*== Prototypes: {{{ ==*/
+/*=====================*/
+void thread_print(size_t i, Semaphore& waitingSemaphore, Semaphore& releasingSemaphore);
+// }}}
+
 void thread_print(size_t i, Semaphore& waitingSemaphore, Semaphore& releasingSemaphore) {
 	for(int j = 0; j < 10; j++) {
 		waitingSemaphore.wait();
@@ -22,7 +28,7 @@ int main() {
 	Thread threads[3];
 
 	for(size_t i = 1; i <= 3; ++i) {
-		int const waitingSemaphoreID = i - 1, releasingSemaphoreID = i % 3;
+		size_t const waitingSemaphoreID = i - 1, releasingSemaphoreID = i % 3;
 		threads[i - 1].start(
 		  thread_print, i, std::ref(sem[waitingSemaphoreID]), std::ref(sem[releasingSemaphoreID]));
 	}

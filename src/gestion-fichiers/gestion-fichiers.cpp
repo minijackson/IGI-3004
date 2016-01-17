@@ -48,7 +48,7 @@ void IFile::getLine(char* buf) {
 			return;
 		}
 
-		int status = read(fd, &buf[i], 1);
+		ssize_t status = read(fd, &buf[i], 1);
 		if(status == 0) {
 			ended = true;
 			break;

@@ -27,6 +27,10 @@ public:
 	 */
 	explicit Semaphore(unsigned int value) noexcept(false);
 
+	Semaphore(const Semaphore&) noexcept(true) = default;
+	Semaphore& operator=(const Semaphore&) noexcept(true) = default;
+	Semaphore& operator=(Semaphore&&) noexcept(true) = default;
+
 	/*! \brief Semaphore destructor
 	 *
 	 * Will destroy the semaphore. Any thread waiting for this semaphore while

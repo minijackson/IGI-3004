@@ -11,6 +11,22 @@
 
 constexpr size_t const TAILLEBUF = 2048;
 
+/*=====================*/
+/*== Prototypes: {{{ ==*/
+/*=====================*/
+void readAndStore(IFile& source, char* data);
+void readingThreadMain(std::string filename,
+                       char data[],
+                       Semaphore& readingLock,
+                       Semaphore& writingLock);
+
+void getAndTransmit(OFile& destination, char* data);
+void transmittingThreadMain(std::string filename,
+                            char data[],
+                            Semaphore& readingLock,
+                            Semaphore& writingLock);
+// }}}
+
 void readAndStore(IFile& source, char* data) {
 	char line[TAILLEBUF];
 	source >> line;
@@ -39,7 +55,6 @@ void readingThreadMain(std::string filename,
 	writingLock.post();
 
 	std::cout << "[Reading]: Goodbye!" << std::endl;
-	pthread_exit(NULL);
 }
 
 void getAndTransmit(OFile& destination, char* data) {
@@ -67,7 +82,6 @@ void transmittingThreadMain(std::string filename,
 	std::cout << "[Transmission]: Received End-of-Transmission" << std::endl;
 
 	std::cout << "[Transmission]: Goodbye!" << std::endl;
-	pthread_exit(NULL);
 }
 
 int main(int argc, char* argv[]) {

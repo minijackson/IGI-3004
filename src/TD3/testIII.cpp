@@ -51,14 +51,15 @@ int main() {
 				// Stop the child
 				kill(pid, SIGTERM);
 
+				// Overkill but just in case...
+				wait(nullptr);
+
 				return invalidCode ? EPERM : 0;
 
 			} catch(std::ios_base::failure const& e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 				return e.code().value();
 			}
-
-			wait(nullptr);
 		}
 
 	} catch(std::system_error const& e) {

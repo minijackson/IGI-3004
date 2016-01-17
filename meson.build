@@ -1,6 +1,6 @@
 project('Système d\'exploitation', 'cpp', default_options : ['cpp_std=c++14'], license: 'MIT')
 
-add_global_arguments('-fdiagnostics-color=always', language: 'cpp')
+add_global_arguments(['-fdiagnostics-color=always', '-Wno-c++98-compat', '-Wno-padded', '-Wno-shadow'], language: 'cpp')
 
 thread_dep = dependency('threads')
 
