@@ -1,4 +1,7 @@
+#include <functional>
 #include <iostream>
+
+#include <cstddef>
 
 #include "semaphore.hpp"
 #include "thread.hpp"
@@ -10,9 +13,9 @@ void thread_print(size_t i, Semaphore& waitingSemaphore, Semaphore& releasingSem
 // }}}
 
 void thread_print(size_t i, Semaphore& waitingSemaphore, Semaphore& releasingSemaphore) {
-	for(int j = 0; j < 10; j++) {
+	for(int j = 1; j <= 10; j++) {
 		waitingSemaphore.wait();
-		std::cout << "Affichage " << j + 1 << " du thread " << i << std::endl;
+		std::cout << "Affichage " << j << " du thread " << i << std::endl;
 		releasingSemaphore.post();
 	}
 }

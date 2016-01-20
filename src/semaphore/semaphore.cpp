@@ -1,5 +1,9 @@
 #include "semaphore.hpp"
 
+#include <system_error>
+
+#include <cerrno>
+
 Semaphore::Semaphore(unsigned int value) noexcept(false)
       : semaphore() {
 	if(sem_init(&semaphore, /* __pshared = */ 0, value) == -1) {

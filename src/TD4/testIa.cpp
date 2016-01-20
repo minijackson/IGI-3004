@@ -1,6 +1,10 @@
+#include <functional>
 #include <iostream>
 #include <memory>
+#include <string>
+#include <utility>
 
+#include <cerrno>
 #include <cstring>
 
 #include <pthread.h>
@@ -18,13 +22,15 @@ void readAndStore(IFile& source, char* data);
 void readingThreadMain(std::string filename,
                        char data[],
                        Semaphore& readingLock,
-                       Semaphore& writingLock);
+                       Semaphore& writingLock,
+                       bool& readingFinished);
 
 void getAndTransmit(OFile& destination, char* data);
 void transmittingThreadMain(std::string filename,
                             char data[],
                             Semaphore& readingLock,
-                            Semaphore& writingLock);
+                            Semaphore& writingLock,
+                            bool& readingFinished);
 // }}}
 
 void readAndStore(IFile& source, char* data) {
@@ -38,7 +44,8 @@ void readAndStore(IFile& source, char* data) {
 void readingThreadMain(std::string filename,
                        char data[],
                        Semaphore& readingLock,
-                       Semaphore& writingLock) {
+                       Semaphore& writingLock,
+                       bool& readingFinished) {
 
 	std::cout << "[Reading]: Thread spawned." << std::endl;
 
@@ -50,8 +57,8 @@ void readingThreadMain(std::string filename,
 		writingLock.post();
 	}
 
-	std::cout << "[Reading]: Sending End-of-Transmission" << std::endl;
-	data[0] = 0x04;
+	std::cout << "[Reading]: Finished!" << std::endl;
+	readingFinished = true;
 	writingLock.post();
 
 	std::cout << "[Reading]: Goodbye!" << std::endl;
@@ -64,7 +71,8 @@ void getAndTransmit(OFile& destination, char* data) {
 void transmittingThreadMain(std::string filename,
                             char data[],
                             Semaphore& readingLock,
-                            Semaphore& writingLock) {
+                            Semaphore& writingLock,
+                            bool& readingFinished) {
 
 	std::cout << "[Transmission]: Thread spawned." << std::endl;
 
@@ -72,14 +80,14 @@ void transmittingThreadMain(std::string filename,
 
 	writingLock.wait();
 
-	while(data[0] != 0x04) {
+	while(!readingFinished) {
 		destination << data;
 		readingLock.post();
 		std::cout << "[Transmission]: Line transmitted." << std::endl;
 
 		writingLock.wait();
 	}
-	std::cout << "[Transmission]: Received End-of-Transmission" << std::endl;
+	std::cout << "[Transmission]: Reading finished!" << std::endl;
 
 	std::cout << "[Transmission]: Goodbye!" << std::endl;
 }
@@ -90,8 +98,9 @@ int main(int argc, char* argv[]) {
 		return EINVAL;
 	}
 
-	auto readingLock = Semaphore(1), writingLock = Semaphore(0), readingReady = Semaphore(0),
-	     transmissionReady = Semaphore(0);
+	auto readingLock = Semaphore(1), writingLock = Semaphore(0);
+
+	bool readingFinished = false;
 
 	auto c = std::make_unique<char[]>(TAILLEBUF);
 	c.get()[0] = '\0';
@@ -102,10 +111,15 @@ int main(int argc, char* argv[]) {
 	                         std::move(argv[2]),
 	                         c.get(),
 	                         std::ref(readingLock),
-	                         std::ref(writingLock));
+	                         std::ref(writingLock),
+	                         std::ref(readingFinished));
 
-	readingThread.start(
-	  readingThreadMain, std::move(argv[1]), c.get(), std::ref(readingLock), std::ref(writingLock));
+	readingThread.start(readingThreadMain,
+	                    std::move(argv[1]),
+	                    c.get(),
+	                    std::ref(readingLock),
+	                    std::ref(writingLock),
+	                    std::ref(readingFinished));
 
 	std::cout << "[Main]: Waiting for Reading and Transmission to finish" << std::endl;
 	transmittingThread.join();

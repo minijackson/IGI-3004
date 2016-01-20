@@ -1,13 +1,16 @@
 #include <iostream>
+#include <system_error>
 
-#include <cstring>
+#include <cerrno>
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include <unistd.h>
 #include <sys/wait.h>
 
 #include "gestion-fichiers.hpp"
-#include "pipe.hpp"
 
 constexpr size_t const TAILLEBUF = 2048;
 

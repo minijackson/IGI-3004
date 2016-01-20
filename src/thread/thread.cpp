@@ -1,5 +1,8 @@
 #include "thread.hpp"
 
+#include <exception>
+#include <system_error>
+
 Thread::Thread()
       : thread() {}
 

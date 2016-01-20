@@ -1,9 +1,8 @@
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstddef>
-#include <cerrno>
 #include <iostream>
+#include <memory>
+
+#include <cerrno>
+#include <cstddef>
 
 #include "gestion-fichiers.hpp"
 
@@ -13,11 +12,12 @@ int main() {
 	try {
 		IFile readingFile(1, TAILLEBUF);
 		OFile writingFile(0, TAILLEBUF);
-		char line[TAILLEBUF];
+
+		auto line = std::make_unique<char[]>(TAILLEBUF);
 
 		while(!readingFile.hasEnded()) {
-			readingFile >> line;
-			writingFile << line;
+			readingFile >> line.get();
+			writingFile << line.get();
 		}
 	} catch(std::ios_base::failure const& e) {
 		std::cerr << "Error: " << e.what() << std::endl;

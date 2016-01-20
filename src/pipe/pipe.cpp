@@ -1,12 +1,11 @@
 #include "pipe.hpp"
 
-#include <unistd.h>
-#include <fcntl.h>
-
 #include <system_error>
-#include <ios>
+
 #include <cerrno>
-#include <cstring>
+
+#include <fcntl.h>
+#include <unistd.h>
 
 DummyPipe::DummyPipe(bool nonBlocking) : pipeFd{} {
 	if(nonBlocking) {

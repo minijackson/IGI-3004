@@ -1,9 +1,9 @@
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstddef>
-#include <cerrno>
 #include <iostream>
+#include <memory>
+#include <utility>
+
+#include <cerrno>
+#include <cstddef>
 
 #include "gestion-fichiers.hpp"
 
@@ -11,16 +11,17 @@ constexpr size_t const TAILLEBUF = 2048;
 
 int main(int argc, char const* argv[]) {
 	if(argc != 3) {
-		std::cout << "Usage: " << argv[0] << " source destination" << std::endl;
+		std::cout << "Usage: " << std::move(argv[0]) << " source destination" << std::endl;
 	} else {
 		try {
-			IFile readingFile(argv[1], TAILLEBUF);
-			OFile writingFile(argv[2], TAILLEBUF);
-			char line[TAILLEBUF];
+			IFile readingFile(std::move(argv[1]), TAILLEBUF);
+			OFile writingFile(std::move(argv[2]), TAILLEBUF);
+
+			auto line = std::make_unique<char[]>(TAILLEBUF);
 
 			while(!readingFile.hasEnded()) {
-				readingFile >> line;
-				writingFile << line;
+				readingFile >> line.get();
+				writingFile << line.get();
 			}
 
 			// readingFile.~Ifile();

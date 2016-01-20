@@ -1,9 +1,12 @@
 #include <iostream>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include "procutils.hpp"
 #include "gestion-fichiers.hpp"
 
 constexpr size_t const TAILLEBUF = 2048;

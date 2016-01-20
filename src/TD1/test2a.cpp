@@ -1,9 +1,8 @@
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstddef>
-#include <cerrno>
 #include <iostream>
+#include <memory>
+
+#include <cerrno>
+#include <cstddef>
 
 #include "gestion-fichiers.hpp"
 
@@ -13,9 +12,9 @@ int main() {
 	try {
 		IFile file("fichierTest.txt", TAILLEBUF);
 
-		char line[TAILLEBUF];
-		file >> line;
-		std::cout << line;
+		auto line = std::make_unique<char[]>(TAILLEBUF);
+		file >> line.get();
+		std::cout << line.get();
 
 		// file.~Ifile();
 	} catch(std::ios_base::failure const& e) {

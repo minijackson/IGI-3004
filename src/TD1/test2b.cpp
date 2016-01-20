@@ -1,9 +1,10 @@
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstddef>
-#include <cerrno>
 #include <iostream>
+#include <memory>
+#include <utility>
+
+#include <cerrno>
+#include <cstddef>
+#include <cstdlib>
 
 #include "gestion-fichiers.hpp"
 
@@ -15,11 +16,11 @@ int main(int argc, char const* argv[]) {
 		exit(EINVAL);
 	} else {
 		try {
-			IFile file(argv[1], TAILLEBUF);
+			IFile file(std::move(argv[1]), TAILLEBUF);
 
-			char line[TAILLEBUF];
-			file >> line;
-			std::cout << line;
+			auto line = std::make_unique<char[]>(TAILLEBUF);
+			file >> line.get();
+			std::cout << line.get();
 
 			// file.~Ifile();
 		} catch(std::ios_base::failure const& e) {

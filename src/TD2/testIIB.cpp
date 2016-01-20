@@ -1,5 +1,9 @@
 #include <iostream>
 
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+
 #include <unistd.h>
 #include <sys/wait.h>
 

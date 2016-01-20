@@ -1,7 +1,9 @@
 #include <iostream>
 #include <iomanip>
 
+#include <cerrno>
 #include <cstdio>
+#include <cstdlib>
 
 #include <unistd.h>
 #include <sys/wait.h>

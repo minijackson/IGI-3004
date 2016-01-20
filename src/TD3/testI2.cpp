@@ -1,6 +1,9 @@
 #include <iostream>
+#include <system_error>
 
+#include <cerrno>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include <unistd.h>

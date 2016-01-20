@@ -1,7 +1,5 @@
 #pragma once
 
-#include <system_error>
-
 #include <semaphore.h>
 
 /*! \brief Represents a semaphore.

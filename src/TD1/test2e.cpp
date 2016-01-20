@@ -1,23 +1,22 @@
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <cstddef>
-#include <cerrno>
 #include <iostream>
+#include <memory>
+
+#include <cerrno>
+#include <cstddef>
 
 #include "gestion-fichiers.hpp"
 
 constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
-	char line[TAILLEBUF];
+	auto line = std::make_unique<char[]>(TAILLEBUF);
 
 	try {
 		IFile file(0, TAILLEBUF);
 
 		while(!file.hasEnded()) {
-			file >> line;
-			std::cout << line;
+			file >> line.get();
+			std::cout << line.get();
 		}
 
 		// file.~IFile();
