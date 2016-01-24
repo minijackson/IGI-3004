@@ -9,11 +9,13 @@ subdir('./src/pipe')
 subdir('./src/procutils')
 subdir('./src/semaphore')
 subdir('./src/thread')
+subdir('./src/memory')
 
 subdir('./src/TD1')
 subdir('./src/TD2')
 subdir('./src/TD3')
 subdir('./src/TD4')
+subdir('./src/TD5')
 
 subdir('./tests')
 
