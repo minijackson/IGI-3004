@@ -16,10 +16,14 @@ thread_testing = executable('thread_testing', 'thread_testing.cpp',
 	include_directories: thread_inc,
 	link_with: libthread,
 	dependencies: [boost_testing, thread_dep])
+memory_testing = executable('memory_testing', 'memory_testing.cpp',
+	include_directories: memory_inc,
+	dependencies: boost_testing)
 
 test('Gestion Fichier Testing', gestion_fichiers_testing, args: ['-l', 'test_suite'])
 test('Pipe Testing',            pipe_testing,             args: ['-l', 'test_suite'])
 test('Semaphore Testing',       semaphore_testing,        args: ['-l', 'test_suite'])
 test('Thread Testing',          thread_testing,           args: ['-l', 'test_suite'])
+test('Memory Testing',          memory_testing,           args: ['-l', 'test_suite'])
 
 # vim: ft=cmake

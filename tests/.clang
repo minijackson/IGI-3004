@@ -3,3 +3,4 @@
 -I../src/procutils
 -I../src/semaphore
 -I../src/thread
+-I../src/memory

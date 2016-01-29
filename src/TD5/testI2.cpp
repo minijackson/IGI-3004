@@ -6,8 +6,8 @@
 constexpr size_t const n = 2048;
 constexpr size_t const m = 2048;
 
-long long unsigned int somme2(unsigned int** tableau, size_t N, size_t M) {
-	long long unsigned int somme = 0;
+unsigned long long somme2(unsigned long** tableau, size_t N, size_t M) {
+	unsigned long long somme = 0;
 
 	for(size_t j = 0; j < M; ++j) {
 		for(size_t i = 0; i < N; ++i) {
@@ -19,8 +19,8 @@ long long unsigned int somme2(unsigned int** tableau, size_t N, size_t M) {
 }
 
 int main() {
-	UniquePtr<unsigned int*, MultiDimDeleter> ptr = makeMultiDimUniquePtr<unsigned int**>(n, m);
-	unsigned int** tableau = ptr.get();
+	UniquePtr<unsigned long*, MultiDimDeleter> ptr = makeMultiDimUniquePtr<unsigned long**>(n, m);
+	unsigned long** tableau = ptr.get();
 
 	std::random_device rand;
 	std::mt19937 gen(rand());

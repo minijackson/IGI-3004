@@ -8,9 +8,17 @@ public:
 	template <typename D>
 	UniquePtr(T* pointer, D&& deleter);
 
+	UniquePtr(const UniquePtr&) = delete;
+	UniquePtr& operator=(const UniquePtr&) = delete;
+
+	UniquePtr(UniquePtr&&) noexcept;
+	UniquePtr& operator=(UniquePtr&&) noexcept;
+
 	~UniquePtr();
 
 	T* get();
+	T* release();
+	Deleter getDeleter() const;
 
 protected:
 	T* pointer;
