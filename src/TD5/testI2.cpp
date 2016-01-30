@@ -23,7 +23,8 @@ int main() {
 	unsigned long** tableau = ptr.get();
 
 	std::random_device rand;
-	std::mt19937 gen(rand());
+	std::seed_seq seed{rand(), rand(), rand(), rand(), rand(), rand()};
+	std::mt19937 gen(seed);
 
 	for(size_t i = 0; i < n; ++i) {
 		for(size_t j = 0; j < m; ++j) {
