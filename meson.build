@@ -17,6 +17,9 @@ subdir('./src/TD3')
 subdir('./src/TD4')
 subdir('./src/TD5')
 
+celero_dep = dependency('celero', fallback: ['celero', 'celero_dep'])
+
 subdir('./tests')
+subdir('./benchmarks')
 
 # vim: ft=cmake

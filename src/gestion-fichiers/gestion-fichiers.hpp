@@ -8,12 +8,18 @@
  */
 class IFile {
 public:
+	/*! \brief Construct a dummy file reader.
+	 *
+	 * This object will not be associated with a file.
+	 */
+	IFile() noexcept;
+
 	/*! \brief IFile constructor with file descriptor.
 	 *
 	 * This constructor will not open the file nor will it close it on
 	 * destruction.
 	 */
-	IFile(int const fd, size_t const bufSize);
+	IFile(int const fd, size_t const bufSize) noexcept;
 
 	/*! \brief IFile constructor with file name.
 	 *
@@ -27,6 +33,28 @@ public:
 	 */
 	~IFile();
 
+	// Non-copyable object
+	IFile(const IFile&) = delete;
+	IFile& operator=(const IFile&) = delete;
+
+	/*! \brief Move-construct the file reader.
+	 *
+	 * The previous reader will be transformed to a dummy IFile
+	 *
+	 * \param other the IFile to be moved.
+	 * \return the moved IFile
+	 */
+	IFile(IFile&& other) noexcept;
+
+	/*! \brief Move-assign the file reader.
+	 *
+	 * The previous reader will be transformed to a dummy IFile
+	 *
+	 * \param other the IFile to be moved.
+	 * \return the moved IFile
+	 */
+	IFile& operator=(IFile&& other) noexcept;
+
 	/*! \brief Read a line from the file.
 	 *
 	 * \param line the string to write the line to.
@@ -34,6 +62,10 @@ public:
 	 * \return the current object (for chaining operator>>).
 	 */
 	IFile& operator>>(char* line);
+
+	/*! \brief close the file associated with this object.
+	 */
+	void close();
 
 	/*! \brief Get the file's file descriptor.
 	 *
@@ -57,7 +89,7 @@ public:
 	 *
 	 * \return `true` if the object opened the file.
 	 */
-	bool hasOpenedThefile() const;
+	bool hasOpenedTheFile() const;
 
 protected:
 	/*! \brief Open the file in read-only mode.
@@ -76,16 +108,20 @@ protected:
 	 */
 	void getLine(char* buf) noexcept(false);
 
+	/*! \brief True if this object is a dummy reader.
+	 */
+	bool dummy = false;
+
 	/*! \brief The file descriptor of the current file.
 	 */
-	int const fd;
+	int fd;
 
 	/*! \brief The size of the buffer for reading.
 	 *
 	 * If a line in the file is longer than the buffer size, the whole line
 	 * will not be returned.
 	 */
-	size_t const bufSize;
+	size_t bufSize;
 
 	/*! \brief `true` if the end-of-file has been reached, `false` otherwise.
 	 */
@@ -102,12 +138,18 @@ protected:
  */
 class OFile {
 public:
+	/*! \brief Construct a dummy file writer.
+	 *
+	 * This object will not be associated with a file.
+	 */
+	OFile() noexcept;
+
 	/*! \brief OFile constructor with file descriptor.
 	 *
 	 * This constructor will not open the file nor will it close it on
 	 * destruction.
 	 */
-	OFile(int const fd, size_t const bufSize);
+	OFile(int const fd, size_t const bufSize) noexcept;
 
 	/*! \brief OFile constructor with file name.
 	 *
@@ -121,6 +163,28 @@ public:
 	 */
 	~OFile();
 
+	// Non-copyable object
+	OFile(const OFile&) = delete;
+	OFile& operator=(const OFile&) = delete;
+
+	/*! \brief Move-construct the file writer.
+	 *
+	 * The previous writer will be transformed to a dummy OFile
+	 *
+	 * \param other the OFile to be moved.
+	 * \return the moved OFile
+	 */
+	OFile(OFile&& other) noexcept;
+
+	/*! \brief Move-assign the file writer.
+	 *
+	 * The previous writer will be transformed to a dummy OFile
+	 *
+	 * \param other the OFile to be moved.
+	 * \return the moved OFile
+	 */
+	OFile& operator=(OFile&& other) noexcept;
+
 	/*! \brief Write a line to the file.
 	 *
 	 * \param line the line to write.
@@ -128,6 +192,10 @@ public:
 	 * \return the current object (for chaining operator<<).
 	 */
 	OFile& operator<<(char const* line);
+
+	/*! \brief close the file associated with this object.
+	 */
+	void close();
 
 	/*! \brief Get the file's file descriptor.
 	 *
@@ -145,7 +213,7 @@ public:
 	 *
 	 * \return `true` if the object opened the file.
 	 */
-	bool hasOpenedThefile() const;
+	bool hasOpenedTheFile() const;
 
 protected:
 
@@ -167,16 +235,20 @@ protected:
 	 */
 	void writeLine(char const* content) noexcept(false);
 
+	/*! \brief True if this object is a dummy writer.
+	 */
+	bool dummy = false;
+
 	/*! \brief The file descriptor of the current file.
 	 */
-	int const fd;
+	int fd;
 
 	/*! \brief The size of the buffer for reading.
 	 *
 	 * If a line to write in the file is longer than the buffer size, the line
 	 * will be truncated.
 	 */
-	size_t const bufSize;
+	size_t bufSize;
 
 	/*! \brief `true` if the current object is the one that opened the file.
 	 */

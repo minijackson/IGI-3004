@@ -20,10 +20,10 @@ memory_testing = executable('memory_testing', 'memory_testing.cpp',
 	include_directories: memory_inc,
 	dependencies: boost_testing)
 
-test('Gestion Fichier Testing', gestion_fichiers_testing, args: ['-l', 'test_suite'])
-test('Pipe Testing',            pipe_testing,             args: ['-l', 'test_suite'])
-test('Semaphore Testing',       semaphore_testing,        args: ['-l', 'test_suite'])
-test('Thread Testing',          thread_testing,           args: ['-l', 'test_suite'])
-test('Memory Testing',          memory_testing,           args: ['-l', 'test_suite'])
+test('Gestion Fichiers Testing', gestion_fichiers_testing, args: ['-l', 'test_suite'])
+test('Pipe Testing',             pipe_testing,             args: ['-l', 'test_suite'])
+test('Semaphore Testing',        semaphore_testing,        args: ['-l', 'test_suite'])
+test('Thread Testing',           thread_testing,           args: ['-l', 'test_suite'])
+test('Memory Testing',           memory_testing,           args: ['-l', 'test_suite'])
 
 # vim: ft=cmake

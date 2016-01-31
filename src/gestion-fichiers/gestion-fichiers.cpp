@@ -9,7 +9,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-IFile::IFile(int const fd, size_t const bufSize)
+IFile::IFile() noexcept
+      : dummy(true)
+      , openedTheFile(false) {}
+
+IFile::IFile(int const fd, size_t const bufSize) noexcept
       : fd(fd)
       , bufSize(bufSize) {}
 
@@ -19,14 +23,44 @@ IFile::IFile(char const* filename, size_t const bufSize)
       , openedTheFile(true) {}
 
 IFile::~IFile() {
-	if(openedTheFile) {
-		close(fd);
-	}
+	close();
+}
+
+IFile::IFile(IFile&& other) noexcept
+      : dummy(other.dummy),
+        fd(other.fd),
+        bufSize(other.bufSize),
+        ended(other.ended),
+        openedTheFile(other.openedTheFile) {
+	other.dummy         = true;
+	other.openedTheFile = false;
+}
+
+IFile& IFile::operator=(IFile&& other) noexcept {
+	this->dummy = other.dummy;
+	this->fd = other.fd;
+	this->bufSize = other.bufSize;
+	this->ended = other.ended;
+	this->openedTheFile = other.openedTheFile;
+
+	other.dummy         = true;
+	other.openedTheFile = false;
+	return *this;
 }
 
 IFile& IFile::operator>>(char* line) {
-	getLine(line);
+	if(!dummy) {
+		getLine(line);
+	}
 	return *this;
+}
+
+void IFile::close() {
+	if(openedTheFile) {
+		::close(fd);
+		openedTheFile = false;
+	}
+	dummy = true;
 }
 
 int IFile::getFd() const {
@@ -41,7 +75,7 @@ bool IFile::hasEnded() const {
 	return ended;
 }
 
-bool IFile::hasOpenedThefile() const {
+bool IFile::hasOpenedTheFile() const {
 	return openedTheFile;
 }
 
@@ -55,29 +89,35 @@ int IFile::openFile(char const* filename) {
 }
 
 void IFile::getLine(char* buf) {
-	size_t i = 0;
-	do {
-		// Crash! Line too long
-		if(i >= bufSize) {
-			buf[0] = '\0';
-			ended = true;
-			return;
-		}
+	if(!dummy) {
+		size_t i = 0;
+		do {
+			// Crash! Line too long
+			if(i >= bufSize) {
+				buf[0] = '\0';
+				ended  = true;
+				return;
+			}
 
-		ssize_t status = read(fd, &buf[i], 1);
-		if(status == 0) {
-			ended = true;
-			break;
-		} else if(status > 0) {
-			++i;
-		} else {
-			throw std::system_error(errno, std::system_category());
-		}
-	} while(buf[i-1] != '\n');
-	buf[i] = '\0';
+			ssize_t status = read(fd, &buf[i], 1);
+			if(status == 0) {
+				ended = true;
+				break;
+			} else if(status > 0) {
+				++i;
+			} else {
+				throw std::system_error(errno, std::system_category());
+			}
+		} while(buf[i - 1] != '\n');
+		buf[i] = '\0';
+	}
 }
 
-OFile::OFile(int const fd, size_t const bufSize)
+OFile::OFile() noexcept
+      : dummy(true)
+      , openedTheFile(false) {}
+
+OFile::OFile(int const fd, size_t const bufSize) noexcept
       : fd(fd)
       , bufSize(bufSize) {}
 
@@ -87,14 +127,37 @@ OFile::OFile(char const* filename, size_t const bufSize)
       , openedTheFile(true) {}
 
 OFile::~OFile() {
-	if(openedTheFile) {
-		close(fd);
-	}
+	close();
+}
+
+OFile::OFile(OFile&& other) noexcept
+      : dummy(other.dummy),
+        fd(other.fd),
+        bufSize(other.bufSize),
+        openedTheFile(other.openedTheFile) {
+	other.dummy = true;
+}
+
+OFile& OFile::operator=(OFile&& other) noexcept {
+	this->dummy = other.dummy;
+	this->fd = other.fd;
+	this->bufSize = other.bufSize;
+	this->openedTheFile = other.openedTheFile;
+
+	other.dummy = true;
+	return *this;
 }
 
 OFile& OFile::operator<<(char const* line) {
 	writeLine(line);
 	return *this;
+}
+
+void OFile::close() {
+	if(openedTheFile) {
+		::close(fd);
+	}
+	dummy = true;
 }
 
 int OFile::getFd() const {
@@ -105,7 +168,7 @@ size_t OFile::getBufSize() const {
 	return bufSize;
 }
 
-bool OFile::hasOpenedThefile() const {
+bool OFile::hasOpenedTheFile() const {
 	return openedTheFile;
 }
 

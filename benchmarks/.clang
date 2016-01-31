@@ -1,0 +1,7 @@
+-I../subprojects/celero/celero/include
+-I../src/gestion-fichiers
+-I../src/memory
+-I../src/pipe
+-I../src/procutils
+-I../src/semaphore
+-I../src/thread
