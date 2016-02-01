@@ -135,7 +135,8 @@ OFile::OFile(OFile&& other) noexcept
         fd(other.fd),
         bufSize(other.bufSize),
         openedTheFile(other.openedTheFile) {
-	other.dummy = true;
+	other.dummy         = true;
+	other.openedTheFile = false;
 }
 
 OFile& OFile::operator=(OFile&& other) noexcept {
@@ -144,7 +145,8 @@ OFile& OFile::operator=(OFile&& other) noexcept {
 	this->bufSize = other.bufSize;
 	this->openedTheFile = other.openedTheFile;
 
-	other.dummy = true;
+	other.dummy         = true;
+	other.openedTheFile = false;
 	return *this;
 }
 

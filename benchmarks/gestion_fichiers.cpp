@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <random>
+#include <vector>
 
 CELERO_MAIN;
 
@@ -72,4 +73,47 @@ BASELINE_F(GestionFichiersReading, Baseline, ReadingFixture, 30, 1'000) {
 BENCHMARK_F(GestionFichiersReading, IFile, ReadingFixture, 30, 1'000) {
 	char line[2048];
 	celero::DoNotOptimizeAway(myFile >> line);
+}
+
+class WritingFixture : public BaseFixture {
+public:
+	void setUp(int64_t experimentValue) override {
+		std::random_device r;
+		std::seed_seq seed{r(), r(), r(), r(), r(), r()};
+		std::mt19937 gen(seed);
+
+		for(int64_t i = 0; i < experimentValue; ++i) {
+			std::string line;
+			for(int64_t j = 0; j < experimentValue; ++j) {
+				line.push_back(gen() % 256);
+			}
+			line.push_back('\n');
+			data.push_back(line);
+		}
+
+		stdFile = std::ofstream("write.dat");
+		myFile  = OFile("write.dat", 2048);
+	}
+
+	void tearDown() override {
+		stdFile.close();
+		myFile.close();
+	}
+
+	std::vector<std::string> data;
+
+	std::ofstream stdFile;
+	OFile myFile;
+};
+
+BASELINE_F(GestionFichiersWriting, Baseline, WritingFixture, 30, 1'000) {
+	for(const auto& line : data) {
+		celero::DoNotOptimizeAway(stdFile << line.c_str());
+	}
+}
+
+BENCHMARK_F(GestionFichiersWriting, OFile, WritingFixture, 30, 1'000) {
+	for(const auto& line : data) {
+		celero::DoNotOptimizeAway(myFile << line.c_str());
+	}
 }
