@@ -6,7 +6,7 @@
 #include <random>
 #include <vector>
 
-CELERO_MAIN;
+CELERO_MAIN
 
 class BaseFixture : public celero::TestFixture {
 public:
@@ -98,6 +98,7 @@ public:
 	void tearDown() override {
 		stdFile.close();
 		myFile.close();
+		data.clear();
 	}
 
 	std::vector<std::string> data;
