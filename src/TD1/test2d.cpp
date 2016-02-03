@@ -14,7 +14,7 @@ int main(int argc, char const* argv[]) {
 		std::cout << "Usage: " << std::move(argv[0]) << " file" << std::endl;
 	} else {
 		try {
-			IFile file(std::move(argv[1]), TAILLEBUF);
+			IFile<> file(std::move(argv[1]), TAILLEBUF);
 
 			auto line       = std::make_unique<char[]>(TAILLEBUF);
 			auto lineNumber = int{0};

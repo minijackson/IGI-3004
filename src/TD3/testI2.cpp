@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 		} else if(pid == 0) {
 			myPipe.readOnly();
 			try {
-				OFile destinationFile(argv[2], TAILLEBUF);
+				OFile<> destinationFile(argv[2], TAILLEBUF);
 
 				char receivedMessage[TAILLEBUF];
 				myPipe >> receivedMessage;
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 			myPipe.writeOnly();
 
 			try {
-				IFile sourceFile(argv[1], TAILLEBUF);
+				IFile<> sourceFile(argv[1], TAILLEBUF);
 				char messageToTransmit[TAILLEBUF];
 
 				while(!sourceFile.hasEnded()) {

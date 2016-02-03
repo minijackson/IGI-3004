@@ -14,8 +14,8 @@ int main(int argc, char const* argv[]) {
 		std::cout << "Usage: " << std::move(argv[0]) << " source destination" << std::endl;
 	} else {
 		try {
-			IFile readingFile(std::move(argv[1]), TAILLEBUF);
-			OFile writingFile(std::move(argv[2]), TAILLEBUF);
+			IFile<> readingFile(std::move(argv[1]), TAILLEBUF);
+			OFile<> writingFile(std::move(argv[2]), TAILLEBUF);
 
 			auto line = std::make_unique<char[]>(TAILLEBUF);
 

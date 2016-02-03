@@ -16,7 +16,7 @@ int main(int argc, char const* argv[]) {
 		exit(EINVAL);
 	} else {
 		try {
-			IFile file(std::move(argv[1]), TAILLEBUF);
+			IFile<> file(std::move(argv[1]), TAILLEBUF);
 
 			auto line = std::make_unique<char[]>(TAILLEBUF);
 			file >> line.get();

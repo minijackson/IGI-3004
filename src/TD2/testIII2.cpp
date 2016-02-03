@@ -13,7 +13,7 @@ constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
 	try {
-		IFile file("fichierTest.txt", TAILLEBUF);
+		IFile<> file("fichierTest.txt", TAILLEBUF);
 
 		pid_t pid = fork();
 

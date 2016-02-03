@@ -52,27 +52,71 @@ public:
 			filler << std::endl;
 		}
 
-		stdFile = std::ifstream("read.dat");
-		myFile  = IFile("read.dat", 2048);
+		stdFile          = std::ifstream("read.dat");
+		myUnbufferedFile = IFile<unbuffered_flag>("read.dat", 2048);
+
+		my4096BufferedFile = IFile<buffered_flag>("read.dat", 4096);
+		my2048BufferedFile = IFile<buffered_flag>("read.dat", 2048);
+		my1024BufferedFile = IFile<buffered_flag>("read.dat", 1024);
+		my512BufferedFile  = IFile<buffered_flag>("read.dat", 512);
+		my256BufferedFile  = IFile<buffered_flag>("read.dat", 256);
 	}
 
 	void tearDown() override {
 		stdFile.close();
-		myFile.close();
+		myUnbufferedFile.close();
+
+		my4096BufferedFile.close();
+		my2048BufferedFile.close();
+		my1024BufferedFile.close();
+		my512BufferedFile.close();
+		my256BufferedFile.close();
 	}
 
 	std::ifstream stdFile;
-	IFile myFile;
+	IFile<unbuffered_flag> myUnbufferedFile;
+
+	IFile<buffered_flag> my4096BufferedFile;
+	IFile<buffered_flag> my2048BufferedFile;
+	IFile<buffered_flag> my1024BufferedFile;
+	IFile<buffered_flag> my512BufferedFile;
+	IFile<buffered_flag> my256BufferedFile;
 };
 
-BASELINE_F(GestionFichiersReading, Baseline, ReadingFixture, 30, 1'000) {
+BASELINE_F(GestionFichiersReading, StdFile, ReadingFixture, 30, 1'000) {
 	char line[2048];
-	celero::DoNotOptimizeAway(stdFile >> line);
+	stdFile.getline(line, 2047);
+	celero::DoNotOptimizeAway(std::strcat(line, "\n"));
 }
 
-BENCHMARK_F(GestionFichiersReading, IFile, ReadingFixture, 30, 1'000) {
+BENCHMARK_F(GestionFichiersReading, UnbufferedIFile, ReadingFixture, 30, 1'000) {
 	char line[2048];
-	celero::DoNotOptimizeAway(myFile >> line);
+	celero::DoNotOptimizeAway(myUnbufferedFile >> line);
+}
+
+BENCHMARK_F(GestionFichiersReading, 4096BufferedIFile, ReadingFixture, 30, 1'000) {
+	char line[2048];
+	celero::DoNotOptimizeAway(my4096BufferedFile >> line);
+}
+
+BENCHMARK_F(GestionFichiersReading, 2048BufferedIFile, ReadingFixture, 30, 1'000) {
+	char line[2048];
+	celero::DoNotOptimizeAway(my2048BufferedFile >> line);
+}
+
+BENCHMARK_F(GestionFichiersReading, 1024BufferedIFile, ReadingFixture, 30, 1'000) {
+	char line[2048];
+	celero::DoNotOptimizeAway(my1024BufferedFile >> line);
+}
+
+BENCHMARK_F(GestionFichiersReading, 512BufferedIFile, ReadingFixture, 30, 1'000) {
+	char line[2048];
+	celero::DoNotOptimizeAway(my512BufferedFile >> line);
+}
+
+BENCHMARK_F(GestionFichiersReading, 256BufferedIFile, ReadingFixture, 30, 1'000) {
+	char line[2048];
+	celero::DoNotOptimizeAway(my256BufferedFile >> line);
 }
 
 class WritingFixture : public BaseFixture {
@@ -91,20 +135,23 @@ public:
 			data.push_back(line);
 		}
 
-		stdFile = std::ofstream("write.dat");
-		myFile  = OFile("write.dat", 2048);
+		stdFile          = std::ofstream("write.dat");
+		myUnbufferedFile = OFile<unbuffered_flag>("write.dat", 2048);
+		//myBufferedFile   = OFile<buffered_flag>("write.dat", 2048);
 	}
 
 	void tearDown() override {
 		stdFile.close();
-		myFile.close();
+		myUnbufferedFile.close();
+		//myBufferedFile.close();
 		data.clear();
 	}
 
 	std::vector<std::string> data;
 
 	std::ofstream stdFile;
-	OFile myFile;
+	OFile<unbuffered_flag> myUnbufferedFile;
+	//OFile<buffered_flag> myBufferedFile;
 };
 
 BASELINE_F(GestionFichiersWriting, Baseline, WritingFixture, 30, 1'000) {
@@ -113,8 +160,14 @@ BASELINE_F(GestionFichiersWriting, Baseline, WritingFixture, 30, 1'000) {
 	}
 }
 
-BENCHMARK_F(GestionFichiersWriting, OFile, WritingFixture, 30, 1'000) {
+BENCHMARK_F(GestionFichiersWriting, UnbufferedOFile, WritingFixture, 30, 1'000) {
 	for(const auto& line : data) {
-		celero::DoNotOptimizeAway(myFile << line.c_str());
+		celero::DoNotOptimizeAway(myUnbufferedFile << line.c_str());
 	}
 }
+
+//BENCHMARK_F(GestionFichiersWriting, bufferedOFile, WritingFixture, 30, 1'000) {
+	//for(const auto& line : data) {
+		//celero::DoNotOptimizeAway(myBufferedFile << line.c_str());
+	//}
+//}

@@ -39,7 +39,7 @@ int main() {
 				std::cout << "You have 10 seconds to open the safe." << std::endl
 				          << "Please enter the code of the safe: " << std::flush;
 
-				IFile consoleIn(0, TAILLEBUF);
+				IFile<> consoleIn(0, TAILLEBUF);
 				consoleIn >> code;
 
 				bool invalidCode = std::strcmp(code, "1234\n");

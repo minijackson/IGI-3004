@@ -12,7 +12,7 @@ int main() {
 	auto line = std::make_unique<char[]>(TAILLEBUF);
 
 	try {
-		IFile file(0, TAILLEBUF);
+		IFile<> file(0, TAILLEBUF);
 
 		while(!file.hasEnded()) {
 			file >> line.get();

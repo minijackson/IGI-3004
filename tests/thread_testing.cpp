@@ -102,6 +102,7 @@ void thread_detach_impl(std::shared_ptr<std::mutex> mutexP, size_t& count) {
 
 	myThread.start([threadExecuted, &count, mutex = mutexP]() {
 		std::lock_guard<std::mutex> lock(*mutex);
+		*threadExecuted = true;
 		count = threadExecuted.use_count();
 	});
 
@@ -118,4 +119,6 @@ BOOST_AUTO_TEST_CASE(thread_detach) {
 	thread_detach_impl(mutex, use_count);
 
 	std::lock_guard<std::mutex> lock(*mutex);
+
+	//BOOST_CHECK_EQUAL(use_count, 2);
 }

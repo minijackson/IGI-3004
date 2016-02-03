@@ -10,7 +10,7 @@ constexpr size_t const TAILLEBUF = 2048;
 
 int main() {
 	try {
-		IFile file("fichierTest.txt", TAILLEBUF);
+		IFile<> file("fichierTest.txt", TAILLEBUF);
 
 		auto line = std::make_unique<char[]>(TAILLEBUF);
 		file >> line.get();

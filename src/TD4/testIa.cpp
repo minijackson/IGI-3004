@@ -18,14 +18,16 @@ constexpr size_t const TAILLEBUF = 2048;
 /*=====================*/
 /*== Prototypes: {{{ ==*/
 /*=====================*/
-void readAndStore(IFile& source, char* data);
+template <typename flag>
+void readAndStore(IFile<flag>& source, char* data);
 void readingThreadMain(std::string filename,
                        char data[],
                        Semaphore& readingLock,
                        Semaphore& writingLock,
                        bool& readingFinished);
 
-void getAndTransmit(OFile& destination, char* data);
+template <typename flag>
+void getAndTransmit(OFile<flag>& destination, char* data);
 void transmittingThreadMain(std::string filename,
                             char data[],
                             Semaphore& readingLock,
@@ -33,7 +35,8 @@ void transmittingThreadMain(std::string filename,
                             bool& readingFinished);
 // }}}
 
-void readAndStore(IFile& source, char* data) {
+template <typename flag>
+void readAndStore(IFile<flag>& source, char* data) {
 	char line[TAILLEBUF];
 	source >> line;
 	std::cout << "[Reading]: Line read." << std::endl;
@@ -49,7 +52,7 @@ void readingThreadMain(std::string filename,
 
 	std::cout << "[Reading]: Thread spawned." << std::endl;
 
-	IFile source(filename.c_str(), TAILLEBUF);
+	IFile<> source(filename.c_str(), TAILLEBUF);
 
 	while(!source.hasEnded()) {
 		readingLock.wait();
@@ -64,7 +67,8 @@ void readingThreadMain(std::string filename,
 	std::cout << "[Reading]: Goodbye!" << std::endl;
 }
 
-void getAndTransmit(OFile& destination, char* data) {
+template <typename flag>
+void getAndTransmit(OFile<flag>& destination, char* data) {
 	destination << data;
 }
 
@@ -76,7 +80,7 @@ void transmittingThreadMain(std::string filename,
 
 	std::cout << "[Transmission]: Thread spawned." << std::endl;
 
-	OFile destination(filename.c_str(), TAILLEBUF);
+	OFile<> destination(filename.c_str(), TAILLEBUF);
 
 	writingLock.wait();
 

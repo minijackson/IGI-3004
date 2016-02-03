@@ -19,7 +19,7 @@ int main() {
 		exit(errno);
 	} else {
 		try {
-			IFile file("fichierTest.txt", TAILLEBUF);
+			IFile<> file("fichierTest.txt", TAILLEBUF);
 
 			char line[TAILLEBUF];
 

@@ -35,8 +35,8 @@ int main(int argc, char* argv[]) {
 	return ::boost::unit_test::unit_test_main(&init_unit_test, argc, argv);
 }
 
-BOOST_AUTO_TEST_CASE(opening_file_ro) {
-	IFile file("infile.txt", TAILLEBUF);
+BOOST_AUTO_TEST_CASE(opening_unbuffered_file_ro) {
+	IFile<> file("infile.txt", TAILLEBUF);
 
 	BOOST_CHECK_NE(file.getFd(), -1);
 	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
@@ -44,8 +44,17 @@ BOOST_AUTO_TEST_CASE(opening_file_ro) {
 	BOOST_CHECK(file.hasOpenedTheFile());
 }
 
-BOOST_AUTO_TEST_CASE(opening_stdin_ro) {
-	IFile file(0, TAILLEBUF);
+BOOST_AUTO_TEST_CASE(opening_buffered_file_ro) {
+	IFile<buffered_flag> file("infile.txt", TAILLEBUF);
+
+	BOOST_CHECK_NE(file.getFd(), -1);
+	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
+	BOOST_CHECK(!file.hasEnded());
+	BOOST_CHECK(file.hasOpenedTheFile());
+}
+
+BOOST_AUTO_TEST_CASE(opening_unbuffered_stdin_ro) {
+	IFile<> file(0, TAILLEBUF);
 
 	BOOST_CHECK_EQUAL(file.getFd(), 0);
 	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
@@ -53,24 +62,49 @@ BOOST_AUTO_TEST_CASE(opening_stdin_ro) {
 	BOOST_CHECK(!file.hasOpenedTheFile());
 }
 
-BOOST_AUTO_TEST_CASE(opening_file_wo) {
-	OFile file("outfile.txt", TAILLEBUF);
+BOOST_AUTO_TEST_CASE(opening_buffered_stdin_ro) {
+	IFile<buffered_flag> file(0, TAILLEBUF);
+
+	BOOST_CHECK_EQUAL(file.getFd(), 0);
+	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
+	BOOST_CHECK(!file.hasEnded());
+	BOOST_CHECK(!file.hasOpenedTheFile());
+}
+
+BOOST_AUTO_TEST_CASE(opening_unbuffered_file_wo) {
+	OFile<> file("outfile.txt", TAILLEBUF);
 
 	BOOST_CHECK_NE(file.getFd(), -1);
 	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
 	BOOST_CHECK(file.hasOpenedTheFile());
 }
 
-BOOST_AUTO_TEST_CASE(opening_stdout_wo) {
-	OFile file(1, TAILLEBUF);
+BOOST_AUTO_TEST_CASE(opening_buffered_file_wo) {
+	OFile<buffered_flag> file("outfile.txt", TAILLEBUF);
+
+	BOOST_CHECK_NE(file.getFd(), -1);
+	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
+	BOOST_CHECK(file.hasOpenedTheFile());
+}
+
+BOOST_AUTO_TEST_CASE(opening_unbuffered_stdout_wo) {
+	OFile<> file(1, TAILLEBUF);
 
 	BOOST_CHECK_EQUAL(file.getFd(), 1);
 	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
 	BOOST_CHECK(!file.hasOpenedTheFile());
 }
 
-BOOST_AUTO_TEST_CASE(reading_file) {
-	IFile file("infile.txt", TAILLEBUF);
+BOOST_AUTO_TEST_CASE(opening_buffered_stdout_wo) {
+	OFile<buffered_flag> file(1, TAILLEBUF);
+
+	BOOST_CHECK_EQUAL(file.getFd(), 1);
+	BOOST_CHECK_EQUAL(file.getBufSize(), TAILLEBUF);
+	BOOST_CHECK(!file.hasOpenedTheFile());
+}
+
+BOOST_AUTO_TEST_CASE(reading_unbuffered_file) {
+	IFile<> file("infile.txt", TAILLEBUF);
 
 	std::ostringstream stream;
 
@@ -87,8 +121,26 @@ BOOST_AUTO_TEST_CASE(reading_file) {
 	BOOST_CHECK_EQUAL(stream.str(), referenceText);
 }
 
-BOOST_AUTO_TEST_CASE(reading_move_assigned_file) {
-	IFile file("infile.txt", TAILLEBUF);
+BOOST_AUTO_TEST_CASE(reading_buffered_file) {
+	IFile<buffered_flag> file("infile.txt", TAILLEBUF);
+
+	std::ostringstream stream;
+
+	{
+		auto temp = std::make_unique<char[]>(TAILLEBUF);
+
+		while(!file.hasEnded()) {
+			// stream << file;
+			file >> temp.get();
+			stream << temp.get();
+		}
+	}
+
+	BOOST_CHECK_EQUAL(stream.str(), referenceText);
+}
+
+BOOST_AUTO_TEST_CASE(reading_move_assigned_unbuffered_file) {
+	IFile<> file("infile.txt", TAILLEBUF);
 
 	std::ostringstream stream;
 
@@ -98,7 +150,31 @@ BOOST_AUTO_TEST_CASE(reading_move_assigned_file) {
 		file >> temp.get();
 		stream << temp.get();
 
-		IFile newFile;
+		IFile<> newFile;
+		newFile = std::move(file);
+
+		while(!newFile.hasEnded()) {
+			// stream << file;
+			newFile >> temp.get();
+			stream << temp.get();
+		}
+	}
+
+	BOOST_CHECK_EQUAL(stream.str(), referenceText);
+}
+
+BOOST_AUTO_TEST_CASE(reading_move_assigned_buffered_file) {
+	IFile<buffered_flag> file("infile.txt", TAILLEBUF);
+
+	std::ostringstream stream;
+
+	{
+		auto temp = std::make_unique<char[]>(TAILLEBUF);
+
+		file >> temp.get();
+		stream << temp.get();
+
+		IFile<buffered_flag> newFile;
 		newFile = std::move(file);
 
 		while(!newFile.hasEnded()) {
@@ -112,7 +188,7 @@ BOOST_AUTO_TEST_CASE(reading_move_assigned_file) {
 }
 
 BOOST_AUTO_TEST_CASE(reading_move_constructed_file) {
-	IFile file("infile.txt", TAILLEBUF);
+	IFile<> file("infile.txt", TAILLEBUF);
 
 	std::ostringstream stream;
 
@@ -122,7 +198,7 @@ BOOST_AUTO_TEST_CASE(reading_move_constructed_file) {
 		file >> temp.get();
 		stream << temp.get();
 
-		IFile newFile(std::move(file));
+		IFile<> newFile(std::move(file));
 
 		while(!newFile.hasEnded()) {
 			// stream << file;
@@ -135,7 +211,7 @@ BOOST_AUTO_TEST_CASE(reading_move_constructed_file) {
 }
 
 BOOST_AUTO_TEST_CASE(writing_file) {
-	OFile file("outfile.txt", TAILLEBUF);
+	OFile<> file("outfile.txt", TAILLEBUF);
 
 	std::istringstream stream(referenceText);
 
@@ -150,7 +226,7 @@ BOOST_AUTO_TEST_CASE(writing_file) {
 }
 
 BOOST_AUTO_TEST_CASE(writing_move_assigned_file) {
-	OFile file("outfile.txt", TAILLEBUF), newFile;
+	OFile<> file("outfile.txt", TAILLEBUF), newFile;
 
 	std::istringstream stream(referenceText);
 
@@ -170,7 +246,7 @@ BOOST_AUTO_TEST_CASE(writing_move_assigned_file) {
 }
 
 BOOST_AUTO_TEST_CASE(writing_move_constructed_file) {
-	OFile file("outfile.txt", TAILLEBUF);
+	OFile<> file("outfile.txt", TAILLEBUF);
 
 	std::istringstream stream(referenceText);
 
@@ -179,7 +255,7 @@ BOOST_AUTO_TEST_CASE(writing_move_constructed_file) {
 	std::getline(stream, temp);
 	file << temp.c_str();
 
-	OFile newFile(std::move(file));
+	OFile<> newFile(std::move(file));
 
 	while(std::getline(stream, temp)) {
 		// file << stream;

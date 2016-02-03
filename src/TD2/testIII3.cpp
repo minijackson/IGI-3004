@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	try {
-		IFile file(filename, TAILLEBUF);
+		IFile<> file(filename, TAILLEBUF);
 
 		pid_t pid = fork();
 

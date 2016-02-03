@@ -44,7 +44,7 @@ protected:
  * See the pipe(2) man page for more informations.
  * This class implements the RAII idiom.
  */
-class Pipe : public DummyPipe, public IFile, public OFile {
+class Pipe : public DummyPipe, public IFile<unbuffered_flag>, public OFile<unbuffered_flag> {
 public:
 	/*! \brief Pipe default constructor.
 	 *
