@@ -135,15 +135,15 @@ public:
 			data.push_back(line);
 		}
 
-		stdFile          = std::ofstream("write.dat");
+		stdFile          = std::ofstream("write.dat", std::ios::out | std::ios::trunc);
 		myUnbufferedFile = OFile<unbuffered_flag>("write.dat", 2048);
-		//myBufferedFile   = OFile<buffered_flag>("write.dat", 2048);
+		myBufferedFile   = OFile<buffered_flag>("write.dat", 2048);
 	}
 
 	void tearDown() override {
 		stdFile.close();
 		myUnbufferedFile.close();
-		//myBufferedFile.close();
+		myBufferedFile.close();
 		data.clear();
 	}
 
@@ -151,7 +151,7 @@ public:
 
 	std::ofstream stdFile;
 	OFile<unbuffered_flag> myUnbufferedFile;
-	//OFile<buffered_flag> myBufferedFile;
+	OFile<buffered_flag> myBufferedFile;
 };
 
 BASELINE_F(GestionFichiersWriting, Baseline, WritingFixture, 30, 1'000) {
@@ -166,8 +166,8 @@ BENCHMARK_F(GestionFichiersWriting, UnbufferedOFile, WritingFixture, 30, 1'000) 
 	}
 }
 
-//BENCHMARK_F(GestionFichiersWriting, bufferedOFile, WritingFixture, 30, 1'000) {
-	//for(const auto& line : data) {
-		//celero::DoNotOptimizeAway(myBufferedFile << line.c_str());
-	//}
-//}
+BENCHMARK_F(GestionFichiersWriting, BufferedOFile, WritingFixture, 30, 1'000) {
+	for(const auto& line : data) {
+		celero::DoNotOptimizeAway(myBufferedFile << line.c_str());
+	}
+}

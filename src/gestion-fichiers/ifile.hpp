@@ -7,7 +7,7 @@
  * This class implements the RAII idiom.
  */
 template <typename flag = unbuffered_flag>
-class IFile : public DummyFile<flag> {
+class IFile : public DummyFile<flag, true> {
 	static_assert(std::is_same<flag, buffered_flag>::value ||
 	                std::is_same<flag, unbuffered_flag>::value,
 	              "An IFile must either be buffered or unbuffered.");

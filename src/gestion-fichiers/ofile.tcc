@@ -28,11 +28,6 @@ OFile<flag>::OFile(char const* filename, size_t const bufSize)
       , openedTheFile(true) {}
 
 template <typename flag>
-OFile<flag>::~OFile() {
-	close();
-}
-
-template <typename flag>
 OFile<flag>::OFile(OFile&& other) noexcept
       : dummy(other.dummy),
         fd(other.fd),
